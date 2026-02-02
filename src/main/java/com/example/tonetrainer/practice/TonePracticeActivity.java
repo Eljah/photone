@@ -46,6 +46,8 @@ public class TonePracticeActivity extends AppCompatActivity {
     private static final float REFERENCE_SPEECH_RATE = 0.8f;
     private static final float DEFAULT_REFERENCE_THRESHOLD = 12f;
     private static final int DEFAULT_REFERENCE_MIN_SAMPLES = 2;
+    private static final int REFERENCE_RECORDING_DURATION_MS = 500;
+    private static final int USER_RECORDING_DURATION_MS = 3000;
 
     private PitchAnalyzer pitchAnalyzer;
     private final List<Float> userPitch = new ArrayList<>();
@@ -194,7 +196,10 @@ public class TonePracticeActivity extends AppCompatActivity {
             }
         });
 
-        handler.postDelayed(stopRecordingRunnable, 3000);
+        int recordingDurationMs = recognizeSpeech
+                ? USER_RECORDING_DURATION_MS
+                : REFERENCE_RECORDING_DURATION_MS;
+        handler.postDelayed(stopRecordingRunnable, recordingDurationMs);
     }
 
     private void stopRecordingAndAnalyze(boolean recognizeSpeech) {
