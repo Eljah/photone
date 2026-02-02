@@ -43,12 +43,14 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private TextToSpeech textToSpeech;
     private boolean isTtsReady = false;
+    private static final float REFERENCE_SPEECH_RATE = 0.8f;
+    private static final float DEFAULT_REFERENCE_THRESHOLD = 12f;
+    private static final int DEFAULT_REFERENCE_MIN_SAMPLES = 2;
 
     private PitchAnalyzer pitchAnalyzer;
     private final List<Float> userPitch = new ArrayList<>();
     private boolean isRecording = false;
     private boolean shouldRecognizeSpeech = false;
-    private long recordingStartMs = 0L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable stopRecordingRunnable = new Runnable() {
@@ -85,6 +87,9 @@ public class TonePracticeActivity extends AppCompatActivity {
                     int languageStatus = textToSpeech.setLanguage(vietnameseLocale);
                     isTtsReady = languageStatus != TextToSpeech.LANG_MISSING_DATA
                             && languageStatus != TextToSpeech.LANG_NOT_SUPPORTED;
+                    if (isTtsReady) {
+                        textToSpeech.setSpeechRate(REFERENCE_SPEECH_RATE);
+                    }
                 }
             }
         }, "com.google.android.tts");
@@ -151,7 +156,6 @@ public class TonePracticeActivity extends AppCompatActivity {
         }
         isRecording = true;
         shouldRecognizeSpeech = recognizeSpeech;
-        recordingStartMs = android.os.SystemClock.elapsedRealtime();
 
         userPitch.clear();
         visualizerView.setUserData(userPitch);
@@ -197,22 +201,22 @@ public class TonePracticeActivity extends AppCompatActivity {
         pitchAnalyzer.stop();
         isRecording = false;
         userSample = new ToneSample(new ArrayList<>(userPitch), 20);
-        long durationMs = android.os.SystemClock.elapsedRealtime() - recordingStartMs;
-        compareToneDirection(recognizeSpeech, durationMs);
+        compareToneDirection(recognizeSpeech);
         if (recognizeSpeech) {
             startSpeechRecognition();
         }
     }
 
-    private void compareToneDirection(boolean strictAnalysis, long durationMs) {
+    private void compareToneDirection(boolean strictAnalysis) {
         ToneSample.Direction referenceDirection = referenceSample.getDirection();
         ToneSample.Direction userDirection;
         if (strictAnalysis) {
             userDirection = userSample.getDirection();
         } else {
-            float threshold = getReferenceThreshold(durationMs);
-            int minSamples = getReferenceMinSamples(durationMs);
-            userDirection = userSample.getDirection(threshold, minSamples);
+            userDirection = userSample.getDirection(
+                    DEFAULT_REFERENCE_THRESHOLD,
+                    DEFAULT_REFERENCE_MIN_SAMPLES
+            );
         }
 
         String text;
@@ -224,26 +228,6 @@ public class TonePracticeActivity extends AppCompatActivity {
             text = getString(R.string.tone_result_diff);
         }
         tvToneResult.setText(text);
-    }
-
-    private float getReferenceThreshold(long durationMs) {
-        if (durationMs <= 800) {
-            return 8f;
-        } else if (durationMs <= 1500) {
-            return 12f;
-        } else if (durationMs <= 2500) {
-            return 16f;
-        }
-        return 20f;
-    }
-
-    private int getReferenceMinSamples(long durationMs) {
-        if (durationMs <= 800) {
-            return 1;
-        } else if (durationMs <= 1500) {
-            return 2;
-        }
-        return 3;
     }
 
     private void startSpeechRecognition() {
