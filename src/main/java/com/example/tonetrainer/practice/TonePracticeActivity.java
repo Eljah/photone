@@ -138,7 +138,6 @@ public class TonePracticeActivity extends AppCompatActivity {
             spectrogramView.clear();
         }
         synthesizeReferenceToFile();
-        playReferenceAudio();
     }
 
     private void playReferenceAudio() {
@@ -173,6 +172,12 @@ public class TonePracticeActivity extends AppCompatActivity {
             public void onDone(String utteranceId) {
                 if (utteranceId != null && utteranceId.equals(referenceFileUtteranceId)) {
                     analyzeReferenceFile(outputFile);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playReferenceAudio();
+                        }
+                    });
                 }
             }
 
