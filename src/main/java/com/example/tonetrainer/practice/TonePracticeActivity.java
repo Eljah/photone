@@ -445,32 +445,36 @@ public class TonePracticeActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Recognizer recognizer;
-                synchronized (voskLock) {
-                    if (!isVoskReady || voskModel == null) {
-                        return;
-                    }
-                    recognizer = new Recognizer(voskModel, sampleRate);
-                }
-                int offset = 0;
-                int chunk = Math.min(4096, samples.length);
-                short[] chunkBuffer = new short[chunk];
-                while (offset < samples.length) {
-                    int length = Math.min(chunk, samples.length - offset);
-                    System.arraycopy(samples, offset, chunkBuffer, 0, length);
-                    recognizer.acceptWaveForm(chunkBuffer, length);
-                    offset += length;
-                }
-                final String result = parseVoskText(recognizer.getFinalResult());
-                recognizer.close();
-                if (!result.isEmpty()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvRecognized.setText(result);
-                            tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), result));
+                try {
+                    Recognizer recognizer;
+                    synchronized (voskLock) {
+                        if (!isVoskReady || voskModel == null) {
+                            return;
                         }
-                    });
+                        recognizer = new Recognizer(voskModel, sampleRate);
+                    }
+                    int offset = 0;
+                    int chunk = Math.min(4096, samples.length);
+                    short[] chunkBuffer = new short[chunk];
+                    while (offset < samples.length) {
+                        int length = Math.min(chunk, samples.length - offset);
+                        System.arraycopy(samples, offset, chunkBuffer, 0, length);
+                        recognizer.acceptWaveForm(chunkBuffer, length);
+                        offset += length;
+                    }
+                    final String result = parseVoskText(recognizer.getFinalResult());
+                    recognizer.close();
+                    if (!result.isEmpty()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvRecognized.setText(result);
+                                tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), result));
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    // ignore recognition failures to keep external behavior unchanged
                 }
             }
         }).start();

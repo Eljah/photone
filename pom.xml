@@ -40,9 +40,8 @@
         </dependency>
         <dependency>
             <groupId>com.alphacephei</groupId>
-            <artifactId>vosk-android</artifactId>
-            <version>0.3.32</version>
-            <type>aar</type>
+            <artifactId>vosk</artifactId>
+            <version>0.3.45</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -77,14 +76,28 @@
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <version>4.5.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.istack</groupId>
+                        <artifactId>istack-commons-runtime</artifactId>
+                        <version>3.0.8</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <sdk>
                         <platform>${android.sdk.platform}</platform>
                         <buildTools>28.0.3</buildTools>
                     </sdk>
-                    <dex>
-                        <minSdkVersion>26</minSdkVersion>
-                    </dex>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <failOnDuplicatePackages>false</failOnDuplicatePackages>
                     <dexCoreLibrary>true</dexCoreLibrary>
