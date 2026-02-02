@@ -82,6 +82,9 @@
                         <platform>${android.sdk.platform}</platform>
                         <buildTools>28.0.3</buildTools>
                     </sdk>
+                    <dex>
+                        <minSdkVersion>26</minSdkVersion>
+                    </dex>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <failOnDuplicatePackages>false</failOnDuplicatePackages>
                     <dexCoreLibrary>true</dexCoreLibrary>
