@@ -1,12 +1,8 @@
 package com.example.tonetrainer.practice;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.view.View;
@@ -21,6 +17,7 @@ import com.example.tonetrainer.model.ToneSample;
 import com.example.tonetrainer.model.VietnameseSyllable;
 import com.example.tonetrainer.ui.SpectrogramView;
 import com.example.tonetrainer.ui.ToneVisualizerView;
+import com.example.tonetrainer.util.AssetUtils;
 import com.example.tonetrainer.util.TextDiffUtil;
 
 import java.io.File;
@@ -32,6 +29,10 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.json.JSONObject;
+import org.vosk.Model;
+import org.vosk.Recognizer;
 
 public class TonePracticeActivity extends AppCompatActivity {
 
@@ -55,6 +56,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     private static final int DEFAULT_REFERENCE_MIN_SAMPLES = 2;
     private static final int REFERENCE_RECORDING_DURATION_MS = 500;
     private static final int USER_RECORDING_DURATION_MS = 3000;
+    private static final String VOSK_ASSET_DIR = "vosk-model-small-vi";
 
     private PitchAnalyzer pitchAnalyzer;
     private final List<Float> userPitch = new ArrayList<>();
@@ -69,6 +71,10 @@ public class TonePracticeActivity extends AppCompatActivity {
             stopRecordingAndAnalyze(shouldRecognizeSpeech);
         }
     };
+    private final Object voskLock = new Object();
+    private Model voskModel;
+    private boolean isVoskReady = false;
+    private boolean voskInitFailed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +109,8 @@ public class TonePracticeActivity extends AppCompatActivity {
                 }
             }
         }, "com.google.android.tts");
+
+        initVoskAsync();
 
         referenceSample = createSimpleReferenceSample();
         visualizerView.setReferenceData(referenceSample.getPitchHz());
@@ -426,65 +434,83 @@ public class TonePracticeActivity extends AppCompatActivity {
     }
 
     private void startSpeechRecognition() {
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+        if (!isVoskReady || voskModel == null || voskInitFailed) {
             return;
         }
-
-        final SpeechRecognizer recognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN");
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "vi-VN");
-        intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true);
-
-        recognizer.setRecognitionListener(new RecognitionListener() {
+        final short[] samples = pitchAnalyzer.getRecordedSamples();
+        final int sampleRate = pitchAnalyzer.getRecordedSampleRate();
+        if (samples.length == 0 || sampleRate <= 0) {
+            return;
+        }
+        new Thread(new Runnable() {
             @Override
-            public void onReadyForSpeech(Bundle params) {
-            }
-
-            @Override
-            public void onBeginningOfSpeech() {
-            }
-
-            @Override
-            public void onRmsChanged(float rmsdB) {
-            }
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {
-            }
-
-            @Override
-            public void onEndOfSpeech() {
-            }
-
-            @Override
-            public void onError(int error) {
-                recognizer.destroy();
-            }
-
-            @Override
-            public void onResults(Bundle results) {
-                List<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                String recognized = "";
-                if (matches != null && !matches.isEmpty()) {
-                    recognized = matches.get(0);
+            public void run() {
+                try {
+                    Recognizer recognizer;
+                    synchronized (voskLock) {
+                        if (!isVoskReady || voskModel == null) {
+                            return;
+                        }
+                        recognizer = new Recognizer(voskModel, sampleRate);
+                    }
+                    int offset = 0;
+                    int chunk = Math.min(4096, samples.length);
+                    short[] chunkBuffer = new short[chunk];
+                    while (offset < samples.length) {
+                        int length = Math.min(chunk, samples.length - offset);
+                        System.arraycopy(samples, offset, chunkBuffer, 0, length);
+                        recognizer.acceptWaveForm(chunkBuffer, length);
+                        offset += length;
+                    }
+                    final String result = parseVoskText(recognizer.getFinalResult());
+                    recognizer.close();
+                    if (!result.isEmpty()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvRecognized.setText(result);
+                                tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), result));
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    // ignore recognition failures to keep external behavior unchanged
                 }
-                tvRecognized.setText(recognized);
-                tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), recognized));
-                recognizer.destroy();
             }
+        }).start();
+    }
 
+    private void initVoskAsync() {
+        new Thread(new Runnable() {
             @Override
-            public void onPartialResults(Bundle partialResults) {
+            public void run() {
+                try {
+                    File modelDir = new File(getFilesDir(), VOSK_ASSET_DIR);
+                    if (!modelDir.exists() || modelDir.list() == null || modelDir.list().length == 0) {
+                        AssetUtils.copyAssetFolder(getAssets(), VOSK_ASSET_DIR, modelDir);
+                    }
+                    Model model = new Model(modelDir.getAbsolutePath());
+                    synchronized (voskLock) {
+                        voskModel = model;
+                        isVoskReady = true;
+                    }
+                } catch (IOException e) {
+                    voskInitFailed = true;
+                }
             }
+        }).start();
+    }
 
-            @Override
-            public void onEvent(int eventType, Bundle params) {
-            }
-        });
-
-        recognizer.startListening(intent);
+    private String parseVoskText(String hypothesis) {
+        if (hypothesis == null || hypothesis.isEmpty()) {
+            return "";
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(hypothesis);
+            return jsonObject.optString("text", "");
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     @Override
@@ -493,6 +519,12 @@ public class TonePracticeActivity extends AppCompatActivity {
         handler.removeCallbacks(stopRecordingRunnable);
         pitchAnalyzer.stop();
         stopReferenceAudio();
+        synchronized (voskLock) {
+            if (voskModel != null) {
+                voskModel.close();
+                voskModel = null;
+            }
+        }
         if (textToSpeech != null) {
             textToSpeech.shutdown();
             textToSpeech = null;

@@ -16,6 +16,10 @@ public class PitchAnalyzer {
 
     private volatile boolean running;
     private Thread workerThread;
+    private final Object recordLock = new Object();
+    private short[] recordedSamples = new short[0];
+    private int recordedSampleCount;
+    private int recordedSampleRate;
 
     public void startRealtimePitch(final PitchListener listener) {
         startRealtimePitch(listener, null);
@@ -49,12 +53,18 @@ public class PitchAnalyzer {
                 );
 
                 short[] buffer = new short[minBufferSize];
+                synchronized (recordLock) {
+                    recordedSampleRate = sampleRate;
+                    recordedSampleCount = 0;
+                    recordedSamples = new short[Math.max(minBufferSize * 4, 4096)];
+                }
 
                 try {
                     record.startRecording();
                     while (running) {
                         int read = record.read(buffer, 0, buffer.length);
                         if (read > 0) {
+                            appendRecordedSamples(buffer, read);
                             float pitch = estimatePitch(buffer, read, sampleRate);
                             if (pitch > 0f && listener != null) {
                                 listener.onPitch(pitch);
@@ -106,6 +116,34 @@ public class PitchAnalyzer {
             } catch (InterruptedException ignored) {
             }
             workerThread = null;
+        }
+    }
+
+    public short[] getRecordedSamples() {
+        synchronized (recordLock) {
+            short[] copy = new short[recordedSampleCount];
+            System.arraycopy(recordedSamples, 0, copy, 0, recordedSampleCount);
+            return copy;
+        }
+    }
+
+    public int getRecordedSampleRate() {
+        synchronized (recordLock) {
+            return recordedSampleRate;
+        }
+    }
+
+    private void appendRecordedSamples(short[] buffer, int read) {
+        synchronized (recordLock) {
+            int needed = recordedSampleCount + read;
+            if (needed > recordedSamples.length) {
+                int newSize = Math.max(needed, recordedSamples.length * 2);
+                short[] expanded = new short[newSize];
+                System.arraycopy(recordedSamples, 0, expanded, 0, recordedSampleCount);
+                recordedSamples = expanded;
+            }
+            System.arraycopy(buffer, 0, recordedSamples, recordedSampleCount, read);
+            recordedSampleCount += read;
         }
     }
 

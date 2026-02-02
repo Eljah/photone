@@ -38,6 +38,12 @@
             <artifactId>support-annotations</artifactId>
             <version>28.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.vosk</groupId>
+            <artifactId>vosk-android</artifactId>
+            <version>0.3.47</version>
+            <type>aar</type>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -45,6 +51,11 @@
             <id>google</id>
             <name>Google Maven</name>
             <url>https://maven.google.com</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
     </repositories>
 
