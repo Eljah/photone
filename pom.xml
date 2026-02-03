@@ -11,6 +11,7 @@
     <properties>
         <android.platform.version>28</android.platform.version>
         <android.build.tools>28.0.3</android.build.tools>
+        <aab.skip>true</aab.skip>
         <java.version>1.8</java.version>
     </properties>
 
@@ -88,6 +89,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <skip>${aab.skip}</skip>
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.ap_"
                                       tofile="${project.build.directory}/${project.build.finalName}.ap_.zip"
@@ -109,6 +111,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>${aab.skip}</skip>
                             <executable>bundletool</executable>
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
