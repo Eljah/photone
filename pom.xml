@@ -9,7 +9,8 @@
     <packaging>apk</packaging>
 
     <properties>
-        <android.sdk.platform>28</android.sdk.platform>
+        <android.sdk.platform>34</android.sdk.platform>
+        <android.build.tools>34.0.0</android.build.tools>
         <java.version>1.8</java.version>
     </properties>
 
@@ -17,9 +18,9 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>28</version>
+            <version>34</version>
             <scope>system</scope>
-            <systemPath>${env.ANDROID_HOME}/platforms/android-28/android.jar</systemPath>
+            <systemPath>${env.ANDROID_HOME}/platforms/android-${android.sdk.platform}/android.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.android.support</groupId>
@@ -64,7 +65,7 @@
                 <configuration>
                     <sdk>
                         <platform>${android.sdk.platform}</platform>
-                        <buildTools>28.0.3</buildTools>
+                        <buildTools>${android.build.tools}</buildTools>
                     </sdk>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <failOnDuplicatePackages>false</failOnDuplicatePackages>
@@ -75,6 +76,31 @@
                         </excludes>
                     </artifactSet>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>build-aab</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bundletool</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>build-bundle</argument>
+                                <argument>--modules</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.ap_</argument>
+                                <argument>--output</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.aab</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
