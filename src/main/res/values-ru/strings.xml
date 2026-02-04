@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Тренажёр вьетнамских тонов</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">Тренажер вьетнамских тонов</string>
     <string name="btn_demo">Демо тонов</string>
     <string name="btn_practice">Тренировка</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">Верно!</string>
     <string name="label_wrong">Неверный порядок.</string>
     <string name="label_no_round">Сначала проиграйте пару.</string>
+    <string name="label_already_scored">Этот раунд уже оценен. Сгенерируйте новую пару.</string>
     <string name="label_not_enough_variants">Недостаточно вариантов для этого выбора.</string>
     <string name="label_tts_not_ready">Озвучка еще не готова.</string>
     <string name="title_sound_mode">Различение звуков</string>
@@ -40,7 +42,9 @@
     <string name="tone_result_no_data">Недостаточно данных для анализа тона.</string>
     <string name="title_voice_settings">Настройки</string>
     <string name="label_app_language">Язык приложения</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
     <string name="language_system_default">Системный</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Пол голоса</string>
     <string name="label_voice_gender_hint">Применяется, если выбранный синтезатор речи поддерживает мужские и женские голоса.</string>
     <string name="label_voice_selection">Предпочитаемый голос</string>

@@ -42,7 +42,9 @@
     <string name="tone_result_no_data">Not enough data to analyze tone.</string>
     <string name="title_voice_settings">Settings</string>
     <string name="label_app_language">App language</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
     <string name="language_system_default">System default</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Voice gender</string>
     <string name="label_voice_gender_hint">Applied when the selected text-to-speech engine provides gendered voices.</string>
     <string name="label_voice_selection">Preferred voice</string>

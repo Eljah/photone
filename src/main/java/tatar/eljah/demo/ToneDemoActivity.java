@@ -37,7 +37,10 @@ public class ToneDemoActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleManager.applyLocale(newBase));
     }
 
-    private static final String[] CONSONANTS = {"", "m", "n", "l", "b", "d", "g", "h", "k", "ng"};
+    private static final String[] CONSONANTS = {
+            "", "b", "c", "ch", "d", "đ", "g", "gh", "gi", "h", "k", "kh", "l", "m", "n",
+            "ng", "ngh", "nh", "p", "ph", "qu", "r", "s", "t", "th", "tr", "v", "x"
+    };
     private static final String[] VOWELS = {
             "a", "ă", "â", "e", "ê", "i", "o", "ô", "ơ", "u", "ư", "y"
     };

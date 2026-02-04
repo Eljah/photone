@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Trainer für vietnamesische Töne</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">Trainer für vietnamesische Töne</string>
     <string name="btn_demo">Ton-Demo</string>
     <string name="btn_practice">Übung</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">Richtig!</string>
     <string name="label_wrong">Falsche Reihenfolge.</string>
     <string name="label_no_round">Spiele zuerst ein Paar ab.</string>
+    <string name="label_already_scored">Diese Runde wurde bereits gewertet. Erzeuge ein neues Paar.</string>
     <string name="label_not_enough_variants">Nicht genug Varianten für diese Auswahl.</string>
     <string name="label_tts_not_ready">Text-zu-Sprache ist nicht bereit.</string>
     <string name="title_sound_mode">Lautunterscheidung</string>
@@ -39,9 +41,15 @@
     <string name="tone_result_diff">Die Tonrichtung weicht von der Referenz ab.</string>
     <string name="tone_result_no_data">Nicht genug Daten, um den Ton zu analysieren.</string>
     <string name="title_voice_settings">Stimmeinstellungen</string>
+    <string name="label_app_language">App-Sprache</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
+    <string name="language_system_default">Systemstandard</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Stimmgeschlecht</string>
     <string name="label_voice_gender_hint">Wird angewendet, wenn die ausgewählte Sprachausgabe geschlechtsspezifische Stimmen bietet.</string>
+    <string name="label_voice_selection">Bevorzugte Stimme</string>
     <string name="voice_gender_auto">Automatisch</string>
     <string name="voice_gender_male">Männlich</string>
     <string name="voice_gender_female">Weiblich</string>
+    <string name="voice_selection_auto">Automatisch</string>
 </resources>
