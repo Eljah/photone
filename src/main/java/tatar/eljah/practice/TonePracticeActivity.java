@@ -144,6 +144,9 @@ public class TonePracticeActivity extends AppCompatActivity {
         pitchAnalyzer = new PitchAnalyzer();
 
         setupSpinners();
+        referenceSample = createSimpleReferenceSample();
+        visualizerView.setReferenceData(referenceSample.getPitchHz());
+        visualizerView.setUserData(null);
         updateTargetFromSelection();
         ensureRecordingPermission();
 
@@ -162,10 +165,6 @@ public class TonePracticeActivity extends AppCompatActivity {
                 }
             }
         }, "com.google.android.tts");
-
-        referenceSample = createSimpleReferenceSample();
-        visualizerView.setReferenceData(referenceSample.getPitchHz());
-        visualizerView.setUserData(null);
 
         btnPlayReference.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,6 +226,11 @@ public class TonePracticeActivity extends AppCompatActivity {
         String tone = String.valueOf(practiceToneSpinner.getSelectedItem());
         targetSyllable = new VietnameseSyllable(syllable, tone, 0);
         referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
+        resetUserRecording();
+        visualizerView.setUserData(null);
+        if (referenceSample != null) {
+            visualizerView.setReferenceData(referenceSample.getPitchHz());
+        }
     }
 
     private String buildSyllable(Spinner consonantSpinner, Spinner vowelSpinner, Spinner toneSpinner) {
@@ -355,8 +359,10 @@ public class TonePracticeActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        referenceSample = new ToneSample(pitchData, 20);
-                        visualizerView.setReferenceData(referenceSample.getPitchHz());
+                        if (hasValidPitchData(pitchData)) {
+                            referenceSample = new ToneSample(pitchData, 20);
+                            visualizerView.setReferenceData(referenceSample.getPitchHz());
+                        }
                         if (spectrogramView != null) {
                             spectrogramView.clear();
                             for (float[] frame : spectrumFrames) {
@@ -376,6 +382,22 @@ public class TonePracticeActivity extends AppCompatActivity {
         if (!file.delete()) {
             file.deleteOnExit();
         }
+    }
+
+    private boolean hasValidPitchData(List<Float> pitchData) {
+        if (pitchData == null) {
+            return false;
+        }
+        int validSamples = 0;
+        for (Float value : pitchData) {
+            if (value != null && value > 0f) {
+                validSamples++;
+                if (validSamples >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static class WavData {
@@ -714,6 +736,9 @@ public class TonePracticeActivity extends AppCompatActivity {
             tvDiff.setText("");
             return;
         }
+
+        tvRecognized.setText(R.string.label_recognition_in_progress);
+        tvDiff.setText("");
 
         final SpeechRecognizer recognizer = SpeechRecognizer.createSpeechRecognizer(this);
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);

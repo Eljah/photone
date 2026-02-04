@@ -52,4 +52,7 @@
     <string name="voice_gender_male">Nam</string>
     <string name="voice_gender_female">Nữ</string>
     <string name="voice_selection_auto">Tự động</string>
+    <string name="label_recognition_success">Nhận dạng: %1$s</string>
+    <string name="label_recognition_failed">Nhận dạng thất bại.</string>
+    <string name="label_recognition_in_progress">Đang nhận dạng giọng nói…</string>
 </resources>

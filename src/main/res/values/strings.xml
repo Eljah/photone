@@ -42,6 +42,7 @@
     <string name="tone_result_no_data">Not enough data to analyze tone.</string>
     <string name="label_recognition_success">Recognized: %1$s</string>
     <string name="label_recognition_failed">Recognition failed.</string>
+    <string name="label_recognition_in_progress">Recognizing speech…</string>
     <string name="title_voice_settings">Settings</string>
     <string name="label_app_language">App language</string>
     <string name="language_display_format">%1$s (%2$s)</string>

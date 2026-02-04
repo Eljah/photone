@@ -52,4 +52,7 @@
     <string name="voice_gender_male">男性</string>
     <string name="voice_gender_female">女性</string>
     <string name="voice_selection_auto">自動</string>
+    <string name="label_recognition_success">認識結果: %1$s</string>
+    <string name="label_recognition_failed">認識に失敗しました。</string>
+    <string name="label_recognition_in_progress">音声を認識中…</string>
 </resources>

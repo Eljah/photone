@@ -28,6 +28,7 @@
                 android:id="@+id/spinner_sample_consonant"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:minWidth="72dp"
                 android:layout_weight="1" />
 
             <Spinner
@@ -87,6 +88,7 @@
                 android:id="@+id/spinner_demo_first_consonant"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:minWidth="72dp"
                 android:layout_weight="1" />
 
             <Spinner
@@ -120,6 +122,7 @@
                 android:id="@+id/spinner_demo_second_consonant"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:minWidth="72dp"
                 android:layout_weight="1" />
 
             <Spinner

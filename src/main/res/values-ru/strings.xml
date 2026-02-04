@@ -42,6 +42,7 @@
     <string name="tone_result_no_data">Недостаточно данных для анализа тона.</string>
     <string name="label_recognition_success">Распознано: %1$s</string>
     <string name="label_recognition_failed">Распознавание не удалось.</string>
+    <string name="label_recognition_in_progress">Распознавание речи…</string>
     <string name="title_voice_settings">Настройки</string>
     <string name="label_app_language">Язык приложения</string>
     <string name="language_display_format">%1$s (%2$s)</string>

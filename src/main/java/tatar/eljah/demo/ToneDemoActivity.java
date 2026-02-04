@@ -327,8 +327,6 @@ public class ToneDemoActivity extends AppCompatActivity {
     private void playTextWithAnalysis(final String text) {
         stopPlayback();
 
-        currentPitch.clear();
-        visualizerView.setReferenceData(currentPitch);
         visualizerView.setUserData(null);
         if (spectrogramView != null) {
             spectrogramView.clear();
@@ -407,9 +405,11 @@ public class ToneDemoActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        currentPitch.clear();
-                        currentPitch.addAll(pitchData);
-                        visualizerView.setReferenceData(currentPitch);
+                        if (hasValidPitchData(pitchData)) {
+                            currentPitch.clear();
+                            currentPitch.addAll(pitchData);
+                            visualizerView.setReferenceData(currentPitch);
+                        }
                         if (spectrogramView != null) {
                             spectrogramView.clear();
                             for (float[] frame : spectrumFrames) {
@@ -429,6 +429,22 @@ public class ToneDemoActivity extends AppCompatActivity {
         if (!file.delete()) {
             file.deleteOnExit();
         }
+    }
+
+    private boolean hasValidPitchData(List<Float> pitchData) {
+        if (pitchData == null) {
+            return false;
+        }
+        int validSamples = 0;
+        for (Float value : pitchData) {
+            if (value != null && value > 0f) {
+                validSamples++;
+                if (validSamples >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static class WavData {

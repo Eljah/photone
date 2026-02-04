@@ -52,4 +52,7 @@
     <string name="voice_gender_male">Masculino</string>
     <string name="voice_gender_female">Feminino</string>
     <string name="voice_selection_auto">Automático</string>
+    <string name="label_recognition_success">Reconhecido: %1$s</string>
+    <string name="label_recognition_failed">Falha no reconhecimento.</string>
+    <string name="label_recognition_in_progress">Reconhecendo a fala…</string>
 </resources>

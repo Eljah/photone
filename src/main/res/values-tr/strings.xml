@@ -52,4 +52,7 @@
     <string name="voice_gender_male">Erkek</string>
     <string name="voice_gender_female">Kadın</string>
     <string name="voice_selection_auto">Otomatik</string>
+    <string name="label_recognition_success">Algılandı: %1$s</string>
+    <string name="label_recognition_failed">Tanıma başarısız.</string>
+    <string name="label_recognition_in_progress">Konuşma tanınıyor…</string>
 </resources>

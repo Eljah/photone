@@ -52,4 +52,7 @@
     <string name="voice_gender_male">男声</string>
     <string name="voice_gender_female">女声</string>
     <string name="voice_selection_auto">自动</string>
+    <string name="label_recognition_success">识别结果：%1$s</string>
+    <string name="label_recognition_failed">识别失败。</string>
+    <string name="label_recognition_in_progress">正在识别语音…</string>
 </resources>

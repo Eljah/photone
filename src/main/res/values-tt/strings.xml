@@ -54,4 +54,5 @@
     <string name="voice_gender_male">Ир-ат</string>
     <string name="voice_gender_female">Хатын-кыз</string>
     <string name="voice_selection_auto">Автоматик</string>
+    <string name="label_recognition_in_progress">Сөйләм таныла…</string>
 </resources>

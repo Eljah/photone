@@ -52,4 +52,7 @@
     <string name="voice_gender_male">ذكر</string>
     <string name="voice_gender_female">أنثى</string>
     <string name="voice_selection_auto">تلقائي</string>
+    <string name="label_recognition_success">تم التعرف على: %1$s</string>
+    <string name="label_recognition_failed">فشل التعرف.</string>
+    <string name="label_recognition_in_progress">جارٍ التعرف على الكلام…</string>
 </resources>

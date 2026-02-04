@@ -28,6 +28,7 @@
                 android:id="@+id/spinner_practice_consonant"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:minWidth="72dp"
                 android:layout_weight="1" />
 
             <Spinner
