@@ -1,5 +1,9 @@
 package tatar.eljah.practice;
 
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -12,6 +16,7 @@ import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
 
 import tatar.eljah.R;
+import tatar.eljah.ui.HistogramView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class SyllableDiscriminationActivity extends AppCompatActivity {
 
@@ -70,6 +77,8 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     private TextView resultView;
     private Button playPairButton;
     private Button checkAnswerButton;
+    private HistogramView histogramView;
+    private Thread histogramThread;
 
     private TextToSpeech textToSpeech;
     private boolean isTtsReady = false;
@@ -104,10 +113,12 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         resultView = findViewById(R.id.tv_discrimination_result);
         playPairButton = findViewById(R.id.btn_play_pair);
         checkAnswerButton = findViewById(R.id.btn_check_answer);
+        histogramView = findViewById(R.id.histogram_view);
 
         setupSpinners();
         updateModeUi();
         updateScore();
+        loadReferenceHistogram();
 
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -139,6 +150,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (histogramThread != null) {
+            histogramThread.interrupt();
+        }
         if (textToSpeech != null) {
             textToSpeech.shutdown();
         }
@@ -283,5 +297,134 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
 
     private void updateScore() {
         scoreView.setText(getString(R.string.label_score, score));
+    }
+
+    private void loadReferenceHistogram() {
+        histogramThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                float[] histogram = buildHistogramFromResource(R.raw.ma1);
+                if (histogram == null || Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        histogramView.setHistogram(histogram);
+                    }
+                });
+            }
+        });
+        histogramThread.start();
+    }
+
+    private float[] buildHistogramFromResource(int resId) {
+        int bins = 32;
+        int[] counts = new int[bins];
+        MediaExtractor extractor = new MediaExtractor();
+        MediaCodec codec = null;
+        try {
+            AssetFileDescriptor afd = getResources().openRawResourceFd(resId);
+            extractor.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+
+            int trackIndex = selectAudioTrack(extractor);
+            if (trackIndex < 0) {
+                return null;
+            }
+            extractor.selectTrack(trackIndex);
+            MediaFormat format = extractor.getTrackFormat(trackIndex);
+            String mime = format.getString(MediaFormat.KEY_MIME);
+            if (mime == null) {
+                return null;
+            }
+            codec = MediaCodec.createDecoderByType(mime);
+            codec.configure(format, null, null, 0);
+            codec.start();
+
+            boolean inputDone = false;
+            boolean outputDone = false;
+            MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+            while (!outputDone && !Thread.currentThread().isInterrupted()) {
+                if (!inputDone) {
+                    int inputIndex = codec.dequeueInputBuffer(10000);
+                    if (inputIndex >= 0) {
+                        ByteBuffer inputBuffer = codec.getInputBuffer(inputIndex);
+                        int sampleSize = extractor.readSampleData(inputBuffer, 0);
+                        if (sampleSize < 0) {
+                            codec.queueInputBuffer(inputIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                            inputDone = true;
+                        } else {
+                            long presentationTimeUs = extractor.getSampleTime();
+                            codec.queueInputBuffer(inputIndex, 0, sampleSize, presentationTimeUs, 0);
+                            extractor.advance();
+                        }
+                    }
+                }
+
+                int outputIndex = codec.dequeueOutputBuffer(bufferInfo, 10000);
+                if (outputIndex >= 0) {
+                    if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        outputDone = true;
+                    }
+                    if (bufferInfo.size > 0) {
+                        ByteBuffer outputBuffer = codec.getOutputBuffer(outputIndex);
+                        if (outputBuffer != null) {
+                            outputBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                            while (outputBuffer.remaining() >= 2) {
+                                short sample = outputBuffer.getShort();
+                                int amplitude = Math.abs(sample);
+                                int bin = (int) ((amplitude / 32768f) * bins);
+                                if (bin >= bins) {
+                                    bin = bins - 1;
+                                }
+                                counts[bin] += 1;
+                            }
+                        }
+                    }
+                    codec.releaseOutputBuffer(outputIndex, false);
+                } else if (outputIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    // Format change ignored for histogram counting.
+                }
+            }
+        } catch (Exception ignored) {
+            return null;
+        } finally {
+            extractor.release();
+            if (codec != null) {
+                try {
+                    codec.stop();
+                } catch (Exception ignored) {
+                }
+                codec.release();
+            }
+        }
+
+        int max = 0;
+        for (int count : counts) {
+            if (count > max) {
+                max = count;
+            }
+        }
+        if (max == 0) {
+            return null;
+        }
+        float[] histogram = new float[bins];
+        for (int i = 0; i < bins; i++) {
+            histogram[i] = counts[i] / (float) max;
+        }
+        return histogram;
+    }
+
+    private int selectAudioTrack(MediaExtractor extractor) {
+        int trackCount = extractor.getTrackCount();
+        for (int i = 0; i < trackCount; i++) {
+            MediaFormat format = extractor.getTrackFormat(i);
+            String mime = format.getString(MediaFormat.KEY_MIME);
+            if (mime != null && mime.startsWith("audio/")) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
