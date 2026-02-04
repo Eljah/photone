@@ -11,8 +11,8 @@
     <string name="label_sample_section">المرجع</string>
     <string name="label_discrimination_section">التمييز</string>
     <string name="label_demo_section">عرض</string>
-    <string name="label_first_syllable">المقطع الأول</string>
-    <string name="label_second_syllable">المقطع الثاني</string>
+    <string name="label_first_syllable">المقطع 1</string>
+    <string name="label_second_syllable">المقطع 2</string>
     <string name="label_sample_selected">المرجع: %1$s</string>
     <string name="label_demo_phrase">العرض: %1$s</string>
     <string name="btn_record_user">تسجيل نسختي</string>

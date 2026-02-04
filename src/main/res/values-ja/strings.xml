@@ -11,8 +11,8 @@
     <string name="label_sample_section">お手本</string>
     <string name="label_discrimination_section">識別</string>
     <string name="label_demo_section">デモ</string>
-    <string name="label_first_syllable">第1音節</string>
-    <string name="label_second_syllable">第2音節</string>
+    <string name="label_first_syllable">1音節</string>
+    <string name="label_second_syllable">2音節</string>
     <string name="label_sample_selected">お手本: %1$s</string>
     <string name="label_demo_phrase">デモ: %1$s</string>
     <string name="btn_record_user">自分の音声を録音</string>

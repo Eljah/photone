@@ -11,8 +11,8 @@
     <string name="label_sample_section">Образец</string>
     <string name="label_discrimination_section">Различение</string>
     <string name="label_demo_section">Демо</string>
-    <string name="label_first_syllable">Первый слог</string>
-    <string name="label_second_syllable">Второй слог</string>
+    <string name="label_first_syllable">1 слог</string>
+    <string name="label_second_syllable">2 слог</string>
     <string name="label_sample_selected">Образец: %1$s</string>
     <string name="label_demo_phrase">Демо: %1$s</string>
     <string name="btn_record_user">Записать мой вариант</string>
