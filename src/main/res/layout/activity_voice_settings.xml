@@ -1,14 +1,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@color/brand_black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/label_app_language"
+        android:textStyle="bold"
+        android:textColor="@color/brand_text_primary" />
+
+    <Spinner
+        android:id="@+id/spinner_app_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/label_voice_gender"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/brand_text_primary" />
 
     <RadioGroup
         android:id="@+id/radio_voice_gender"
@@ -20,33 +36,38 @@
             android:id="@+id/radio_voice_gender_auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/voice_gender_auto" />
+            android:text="@string/voice_gender_auto"
+            android:textColor="@color/brand_text_primary" />
 
         <RadioButton
             android:id="@+id/radio_voice_gender_male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/voice_gender_male" />
+            android:text="@string/voice_gender_male"
+            android:textColor="@color/brand_text_primary" />
 
         <RadioButton
             android:id="@+id/radio_voice_gender_female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/voice_gender_female" />
+            android:text="@string/voice_gender_female"
+            android:textColor="@color/brand_text_primary" />
     </RadioGroup>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="@string/label_voice_gender_hint" />
+        android:text="@string/label_voice_gender_hint"
+        android:textColor="@color/brand_text_secondary" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/label_voice_selection"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/brand_text_primary" />
 
     <Spinner
         android:id="@+id/spinner_voice_selection"

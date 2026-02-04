@@ -1,5 +1,6 @@
 package tatar.eljah.practice;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import tatar.eljah.R;
 import tatar.eljah.audio.PitchAnalyzer;
+import tatar.eljah.settings.LocaleManager;
 import tatar.eljah.tts.TtsVoiceSelector;
 import tatar.eljah.ui.SpectrogramView;
 
@@ -34,6 +36,11 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 public class SyllableDiscriminationActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.applyLocale(newBase));
+    }
 
     public static final String EXTRA_MODE = "mode";
     public static final String MODE_SOUND = "sound";
@@ -208,23 +215,23 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
 
     private void setupSpinners() {
         ArrayAdapter<String> consonantAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, CONSONANTS);
-        consonantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, CONSONANTS);
+        consonantAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         consonantSpinner.setAdapter(consonantAdapter);
 
         ArrayAdapter<String> baseVowelAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, BASE_VOWELS);
-        baseVowelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, BASE_VOWELS);
+        baseVowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         baseVowelSpinner.setAdapter(baseVowelAdapter);
 
         ArrayAdapter<String> toneAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, TONES);
-        toneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, TONES);
+        toneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         toneSpinner.setAdapter(toneAdapter);
 
         ArrayAdapter<String> vowelAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, VOWELS);
-        vowelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, VOWELS);
+        vowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         vowelSpinner.setAdapter(vowelAdapter);
     }
 
@@ -256,8 +263,8 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
 
         optionsView.setText(getString(R.string.label_options, options.get(0), options.get(1)));
         ArrayAdapter<String> choiceAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, options);
-        choiceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, options);
+        choiceAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         firstChoiceSpinner.setAdapter(choiceAdapter);
         secondChoiceSpinner.setAdapter(choiceAdapter);
 

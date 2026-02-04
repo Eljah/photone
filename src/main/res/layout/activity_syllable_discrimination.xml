@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/brand_black">
 
     <LinearLayout
         android:orientation="vertical"
@@ -13,7 +14,8 @@
             android:layout_height="wrap_content"
             android:text="@string/label_discrimination_section"
             android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@color/brand_text_primary" />
 
         <LinearLayout
             android:id="@+id/row_consonant"
@@ -25,7 +27,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_select_consonant" />
+                android:text="@string/label_select_consonant"
+                android:textColor="@color/brand_text_primary" />
 
             <Spinner
                 android:id="@+id/spinner_discrimination_consonant"
@@ -43,7 +46,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_select_base_vowel" />
+                android:text="@string/label_select_base_vowel"
+                android:textColor="@color/brand_text_primary" />
 
             <Spinner
                 android:id="@+id/spinner_discrimination_base_vowel"
@@ -61,7 +65,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_select_tone" />
+                android:text="@string/label_select_tone"
+                android:textColor="@color/brand_text_primary" />
 
             <Spinner
                 android:id="@+id/spinner_discrimination_tone"
@@ -79,7 +84,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_select_vowel" />
+                android:text="@string/label_select_vowel"
+                android:textColor="@color/brand_text_primary" />
 
             <Spinner
                 android:id="@+id/spinner_discrimination_vowel"
@@ -106,20 +112,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
 
         <tatar.eljah.ui.SpectrogramView
             android:id="@+id/spectrogramView"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginTop="12dp"
-            android:background="#222222" />
+            android:background="@color/brand_black" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/label_first_choice" />
+            android:text="@string/label_first_choice"
+            android:textColor="@color/brand_text_primary" />
 
         <Spinner
             android:id="@+id/spinner_discrimination_first"
@@ -130,7 +138,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/label_second_choice" />
+            android:text="@string/label_second_choice"
+            android:textColor="@color/brand_text_primary" />
 
         <Spinner
             android:id="@+id/spinner_discrimination_second"
@@ -150,13 +159,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/brand_text_primary" />
 
         <TextView
             android:id="@+id/tv_discrimination_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
     </LinearLayout>
 </ScrollView>

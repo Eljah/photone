@@ -1,6 +1,9 @@
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FFB300</color>
+    <color name="brand_black">#000000</color>
+    <color name="brand_text_primary">#F5F5F5</color>
+    <color name="brand_text_secondary">#B0BEC5</color>
     <color name="white">#FFFFFF</color>
 </resources>

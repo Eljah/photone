@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ベトナム語声調トレーナー</string>
+    <string name="brand_tagline">ベトナム語声調トレーナー</string>
     <string name="btn_demo">声調デモ</string>
     <string name="btn_practice">練習</string>
     <string name="btn_play_reference">お手本を再生</string>

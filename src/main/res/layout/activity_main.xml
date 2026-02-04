@@ -2,8 +2,32 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
+    android:background="@color/brand_black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="@string/brand_name"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/brand_name"
+        android:textColor="@color/brand_text_primary"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/brand_tagline"
+        android:textColor="@color/brand_text_secondary"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/btn_demo"

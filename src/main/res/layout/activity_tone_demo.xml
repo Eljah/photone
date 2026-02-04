@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/brand_black">
 
     <LinearLayout
         android:orientation="vertical"
@@ -13,7 +14,8 @@
             android:layout_height="wrap_content"
             android:text="@string/label_sample_section"
             android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@color/brand_text_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,7 +54,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -60,13 +63,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/label_demo_section"
             android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@color/brand_text_primary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/label_first_syllable" />
+            android:text="@string/label_first_syllable"
+            android:textColor="@color/brand_text_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -96,7 +101,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/label_second_syllable" />
+            android:text="@string/label_second_syllable"
+            android:textColor="@color/brand_text_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -134,7 +140,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
 
         <tatar.eljah.ui.ToneVisualizerView
             android:id="@+id/toneVisualizerView"
@@ -147,6 +154,6 @@
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginTop="12dp"
-            android:background="#222222" />
+            android:background="@color/brand_black" />
     </LinearLayout>
 </ScrollView>
