@@ -361,8 +361,10 @@ public class TonePracticeActivity extends AppCompatActivity {
                     public void run() {
                         if (hasValidPitchData(pitchData)) {
                             referenceSample = new ToneSample(pitchData, 20);
-                            visualizerView.setReferenceData(referenceSample.getPitchHz());
+                        } else {
+                            referenceSample = createSimpleReferenceSample();
                         }
+                        visualizerView.setReferenceData(referenceSample.getPitchHz());
                         if (spectrogramView != null) {
                             spectrogramView.clear();
                             for (float[] frame : spectrumFrames) {
@@ -708,6 +710,10 @@ public class TonePracticeActivity extends AppCompatActivity {
     }
 
     private void compareToneDirection(boolean strictAnalysis) {
+        if (referenceSample == null || userSample == null) {
+            tvToneResult.setText(getString(R.string.tone_result_no_data));
+            return;
+        }
         ToneSample.Direction referenceDirection = referenceSample.getDirection();
         ToneSample.Direction userDirection;
         if (strictAnalysis) {
