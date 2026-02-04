@@ -89,7 +89,7 @@ public class SpectrogramView extends View {
             return;
         }
 
-        drawAxes(canvas, leftPadding, topPadding, plotWidth, plotHeight);
+        drawAxes(canvas, leftPadding, topPadding, plotWidth, plotHeight, bottomPadding);
         if (frames.isEmpty()) {
             return;
         }
@@ -116,7 +116,7 @@ public class SpectrogramView extends View {
         }
     }
 
-    private void drawAxes(Canvas canvas, int left, int top, int width, int height) {
+    private void drawAxes(Canvas canvas, int left, int top, int width, int height, int bottomPadding) {
         int bottom = top + height;
         int right = left + width;
         canvas.drawLine(left, top, left, bottom, axisPaint);
@@ -146,7 +146,8 @@ public class SpectrogramView extends View {
         canvas.drawText("0", left, bottom + textSize + 8, textPaint);
         String msLabel = "ms";
         float msWidth = textPaint.measureText(msLabel);
-        canvas.drawText(msLabel, left + (width - msWidth) / 2f, bottom + textSize + 26, textPaint);
+        float msBaseline = bottom + Math.max(8f, (bottomPadding - textSize) / 2f);
+        canvas.drawText(msLabel, left + (width - msWidth) / 2f, msBaseline, textPaint);
     }
 
     private float[] limitMagnitudesToMaxFrequency(float[] magnitudes, int sampleRate) {
