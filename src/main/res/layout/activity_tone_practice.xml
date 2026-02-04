@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/brand_black">
 
     <LinearLayout
         android:orientation="vertical"
@@ -8,12 +9,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@string/brand_name"
+            android:src="@drawable/ic_launcher_foreground" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/brand_name"
+            android:textColor="@color/brand_text_primary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:text="@string/brand_tagline"
+            android:textColor="@color/brand_text_secondary"
+            android:textSize="12sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_sample_section"
             android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="@color/brand_text_primary" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,7 +75,8 @@
             android:layout_marginTop="8dp"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:text="" />
+            android:text=""
+            android:textColor="@color/brand_text_primary" />
 
         <Button
             android:id="@+id/btn_play_reference"
@@ -81,27 +110,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
 
         <tatar.eljah.ui.SpectrogramView
             android:id="@+id/spectrogramView"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginTop="12dp"
-            android:background="#222222" />
+            android:background="@color/brand_black" />
 
         <TextView
             android:id="@+id/tv_recognized"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
 
         <TextView
             android:id="@+id/tv_diff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/brand_text_primary" />
     </LinearLayout>
 </ScrollView>

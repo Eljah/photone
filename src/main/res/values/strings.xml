@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Vietnamese Tone Trainer</string>
+    <string name="brand_name">PhoTone</string>
+    <string name="brand_tagline">Тренажер вьетнамских тонов / Vietnamese tone trainer</string>
     <string name="btn_demo">Tone Demo</string>
     <string name="btn_practice">Practice</string>
     <string name="btn_play_reference">Play reference</string>
