@@ -6,6 +6,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -72,7 +73,7 @@ public class ToneDemoActivity extends AppCompatActivity {
     private Spinner sampleConsonantSpinner;
     private Spinner sampleVowelSpinner;
     private Spinner sampleToneSpinner;
-    private TextView samplePreview;
+    private TextView referenceTitle;
 
     private Spinner demoFirstConsonantSpinner;
     private Spinner demoFirstVowelSpinner;
@@ -94,7 +95,7 @@ public class ToneDemoActivity extends AppCompatActivity {
         sampleConsonantSpinner = findViewById(R.id.spinner_sample_consonant);
         sampleVowelSpinner = findViewById(R.id.spinner_sample_vowel);
         sampleToneSpinner = findViewById(R.id.spinner_sample_tone);
-        samplePreview = findViewById(R.id.tv_sample_preview);
+        referenceTitle = findViewById(R.id.tv_reference_title);
 
         demoFirstConsonantSpinner = findViewById(R.id.spinner_demo_first_consonant);
         demoFirstVowelSpinner = findViewById(R.id.spinner_demo_first_vowel);
@@ -105,6 +106,7 @@ public class ToneDemoActivity extends AppCompatActivity {
         demoPhraseView = findViewById(R.id.tv_demo_phrase);
 
         setupSpinners();
+        updateReferenceTitle();
         setupTextToSpeech();
 
         Button playSampleButton = findViewById(R.id.btn_play_reference);
@@ -116,7 +118,7 @@ public class ToneDemoActivity extends AppCompatActivity {
                         sampleVowelSpinner,
                         sampleToneSpinner
                 );
-                samplePreview.setText(getString(R.string.label_sample_selected, syllable));
+                referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
                 playTextWithAnalysis(syllable);
             }
         });
@@ -166,6 +168,20 @@ public class ToneDemoActivity extends AppCompatActivity {
         demoSecondConsonantSpinner.setAdapter(consonantAdapter);
         demoSecondVowelSpinner.setAdapter(vowelAdapter);
         demoSecondToneSpinner.setAdapter(toneAdapter);
+
+        AdapterView.OnItemSelectedListener referenceListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateReferenceTitle();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+        sampleConsonantSpinner.setOnItemSelectedListener(referenceListener);
+        sampleVowelSpinner.setOnItemSelectedListener(referenceListener);
+        sampleToneSpinner.setOnItemSelectedListener(referenceListener);
     }
 
     private void setupTextToSpeech() {
@@ -191,6 +207,15 @@ public class ToneDemoActivity extends AppCompatActivity {
         String tone = String.valueOf(toneSpinner.getSelectedItem());
         String tonedVowel = applyTone(vowel, tone);
         return (consonant + tonedVowel).trim();
+    }
+
+    private void updateReferenceTitle() {
+        String syllable = buildSyllable(
+                sampleConsonantSpinner,
+                sampleVowelSpinner,
+                sampleToneSpinner
+        );
+        referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
     }
 
     private String applyTone(String vowel, String toneLabel) {

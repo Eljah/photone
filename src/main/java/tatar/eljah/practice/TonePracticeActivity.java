@@ -80,7 +80,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     }
 
     private ToneVisualizerView visualizerView;
-    private TextView tvTarget;
+    private TextView referenceTitle;
     private TextView tvRecognized;
     private TextView tvDiff;
     private TextView tvToneResult;
@@ -129,7 +129,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tone_practice);
 
         visualizerView = findViewById(R.id.toneVisualizerView);
-        tvTarget = findViewById(R.id.tv_target);
+        referenceTitle = findViewById(R.id.tv_reference_title);
         tvRecognized = findViewById(R.id.tv_recognized);
         tvDiff = findViewById(R.id.tv_diff);
         tvToneResult = findViewById(R.id.tv_tone_result);
@@ -226,7 +226,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         String syllable = buildSyllable(practiceConsonantSpinner, practiceVowelSpinner, practiceToneSpinner);
         String tone = String.valueOf(practiceToneSpinner.getSelectedItem());
         targetSyllable = new VietnameseSyllable(syllable, tone, 0);
-        tvTarget.setText(syllable);
+        referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
     }
 
     private String buildSyllable(Spinner consonantSpinner, Spinner vowelSpinner, Spinner toneSpinner) {

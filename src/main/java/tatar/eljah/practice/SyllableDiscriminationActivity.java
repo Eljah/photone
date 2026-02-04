@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -85,9 +85,6 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     private Spinner vowelSpinner;
     private Spinner firstChoiceSpinner;
     private Spinner secondChoiceSpinner;
-    private LinearLayout baseVowelRow;
-    private LinearLayout toneRow;
-    private LinearLayout vowelRow;
     private TextView optionsView;
     private TextView scoreView;
     private TextView resultView;
@@ -149,9 +146,6 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         vowelSpinner = findViewById(R.id.spinner_discrimination_vowel);
         firstChoiceSpinner = findViewById(R.id.spinner_discrimination_first);
         secondChoiceSpinner = findViewById(R.id.spinner_discrimination_second);
-        baseVowelRow = findViewById(R.id.row_base_vowel);
-        toneRow = findViewById(R.id.row_tone);
-        vowelRow = findViewById(R.id.row_vowel);
         optionsView = findViewById(R.id.tv_discrimination_options);
         scoreView = findViewById(R.id.tv_discrimination_score);
         resultView = findViewById(R.id.tv_discrimination_result);
@@ -227,8 +221,22 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         baseVowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         baseVowelSpinner.setAdapter(baseVowelAdapter);
 
-        ArrayAdapter<String> toneAdapter = new ArrayAdapter<>(this,
-                R.layout.spinner_item_dark, TONES);
+        ArrayAdapter<String> toneAdapter = new ArrayAdapter<String>(this,
+                R.layout.spinner_item_dark, TONES) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                view.setText(getToneDisplay(position, false));
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                view.setText(getToneDisplay(position, true));
+                return view;
+            }
+        };
         toneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         toneSpinner.setAdapter(toneAdapter);
 
@@ -236,20 +244,44 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
                 R.layout.spinner_item_dark, VOWELS);
         vowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         vowelSpinner.setAdapter(vowelAdapter);
+
+        baseVowelSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                toneAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            }
+        });
     }
 
     private void updateModeUi() {
         if (MODE_SOUND.equals(mode)) {
             setTitle(R.string.title_sound_mode);
-            baseVowelRow.setVisibility(View.VISIBLE);
-            toneRow.setVisibility(View.VISIBLE);
-            vowelRow.setVisibility(View.GONE);
+            baseVowelSpinner.setVisibility(View.VISIBLE);
+            toneSpinner.setVisibility(View.VISIBLE);
+            vowelSpinner.setVisibility(View.GONE);
         } else {
             setTitle(R.string.title_tone_mode);
-            baseVowelRow.setVisibility(View.GONE);
-            toneRow.setVisibility(View.GONE);
-            vowelRow.setVisibility(View.VISIBLE);
+            baseVowelSpinner.setVisibility(View.GONE);
+            toneSpinner.setVisibility(View.GONE);
+            vowelSpinner.setVisibility(View.VISIBLE);
         }
+    }
+
+    private String getToneDisplay(int position, boolean includeLabel) {
+        String baseVowel = String.valueOf(baseVowelSpinner.getSelectedItem());
+        String[] forms = TONE_FORMS.get(baseVowel);
+        String tonedVowel = baseVowel;
+        if (forms != null && position >= 0 && position < forms.length) {
+            tonedVowel = forms[position];
+        }
+        if (includeLabel) {
+            return tonedVowel + " (" + TONES[position] + ")";
+        }
+        return tonedVowel;
     }
 
     private void playPair() {
