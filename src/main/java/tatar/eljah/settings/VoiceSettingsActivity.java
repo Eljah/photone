@@ -37,6 +37,7 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
     private ArrayAdapter<String> localeAdapter;
     private final List<LocaleOption> localeOptions = new ArrayList<>();
     private boolean isUpdatingLocales;
+    private boolean isUserLocaleSelection;
     private TextToSpeech textToSpeech;
     private String pendingVoiceName;
 
@@ -146,15 +147,29 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
         localeAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_dark, new ArrayList<String>());
         localeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         localeSpinner.setAdapter(localeAdapter);
+        localeSpinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, android.view.MotionEvent event) {
+                isUserLocaleSelection = true;
+                return false;
+            }
+        });
         localeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isUpdatingLocales || position < 0 || position >= localeOptions.size()) {
+                if (isUpdatingLocales || !isUserLocaleSelection || position < 0 || position >= localeOptions.size()) {
                     return;
                 }
+                isUserLocaleSelection = false;
                 LocaleOption option = localeOptions.get(position);
-                LocaleManager.setLocaleTag(VoiceSettingsActivity.this, option.localeTag);
-                recreate();
+                String currentTag = LocaleManager.getLocaleTag(VoiceSettingsActivity.this);
+                if (currentTag == null) {
+                    currentTag = "";
+                }
+                if (!currentTag.equals(option.localeTag)) {
+                    LocaleManager.setLocaleTag(VoiceSettingsActivity.this, option.localeTag);
+                    recreate();
+                }
             }
 
             @Override
