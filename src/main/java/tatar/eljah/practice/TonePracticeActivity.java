@@ -710,6 +710,8 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private void startSpeechRecognition() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            tvRecognized.setText(R.string.label_recognition_failed);
+            tvDiff.setText("");
             return;
         }
 
@@ -743,6 +745,8 @@ public class TonePracticeActivity extends AppCompatActivity {
 
             @Override
             public void onError(int error) {
+                tvRecognized.setText(R.string.label_recognition_failed);
+                tvDiff.setText("");
                 recognizer.destroy();
             }
 
@@ -753,8 +757,13 @@ public class TonePracticeActivity extends AppCompatActivity {
                 if (matches != null && !matches.isEmpty()) {
                     recognized = matches.get(0);
                 }
-                tvRecognized.setText(recognized);
-                tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), recognized));
+                if (recognized.isEmpty()) {
+                    tvRecognized.setText(R.string.label_recognition_failed);
+                    tvDiff.setText("");
+                } else {
+                    tvRecognized.setText(getString(R.string.label_recognition_success, recognized));
+                    tvDiff.setText(TextDiffUtil.highlightDiff(targetSyllable.getText(), recognized));
+                }
                 recognizer.destroy();
             }
 

@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -190,6 +191,20 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
             }
         });
 
+        AdapterView.OnItemSelectedListener choiceListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateCheckAnswerEnabled();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+
+        firstChoiceSpinner.setOnItemSelectedListener(choiceListener);
+        secondChoiceSpinner.setOnItemSelectedListener(choiceListener);
+
         checkAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,7 +323,7 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         correctSecond = swap ? options.get(0) : options.get(1);
         lastPairText = correctFirst + " " + correctSecond;
         hasAnswered = false;
-        checkAnswerButton.setEnabled(true);
+        updateCheckAnswerEnabled();
 
         resultView.setText("");
         speakPair();
@@ -392,6 +407,23 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         hasAnswered = true;
         checkAnswerButton.setEnabled(false);
         updateScore();
+    }
+
+    private void updateCheckAnswerEnabled() {
+        if (checkAnswerButton == null) {
+            return;
+        }
+        if (hasAnswered || correctFirst == null || correctSecond == null) {
+            checkAnswerButton.setEnabled(false);
+            return;
+        }
+        Object first = firstChoiceSpinner.getSelectedItem();
+        Object second = secondChoiceSpinner.getSelectedItem();
+        if (first == null || second == null) {
+            checkAnswerButton.setEnabled(false);
+            return;
+        }
+        checkAnswerButton.setEnabled(!first.equals(second));
     }
 
     private void updateScore() {

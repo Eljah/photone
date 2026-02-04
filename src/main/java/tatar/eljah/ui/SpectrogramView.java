@@ -78,8 +78,9 @@ public class SpectrogramView extends View {
             return;
         }
 
-        int leftPadding = getPaddingLeft() + 60;
-        int bottomPadding = getPaddingBottom() + 40;
+        float textSize = textPaint.getTextSize();
+        int leftPadding = getPaddingLeft() + Math.round(textPaint.measureText("2000")) + 40;
+        int bottomPadding = getPaddingBottom() + Math.round(textSize * 2.5f);
         int topPadding = getPaddingTop() + 16;
         int rightPadding = getPaddingRight() + 16;
 
@@ -124,9 +125,12 @@ public class SpectrogramView extends View {
 
         float maxFrequency = Math.min(sampleRate / 2f, MAX_FREQUENCY_HZ);
         float textSize = textPaint.getTextSize();
+        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+        float axisCenterY = top + height / 2f;
+        float axisCenterBaseline = axisCenterY - (fontMetrics.ascent + fontMetrics.descent) / 2f;
         float leftLabelX = left - 12;
         float hzWidth = textPaint.measureText("Hz");
-        canvas.drawText("Hz", leftLabelX - hzWidth, top + textSize, textPaint);
+        canvas.drawText("Hz", leftLabelX - hzWidth, axisCenterBaseline, textPaint);
 
         int ticks = 3;
         for (int i = 0; i <= ticks; i++) {
@@ -136,18 +140,19 @@ public class SpectrogramView extends View {
             canvas.drawLine(left - 8, y, left, y, axisPaint);
             String label = String.format("%.0f", freq);
             float labelWidth = textPaint.measureText(label);
-            canvas.drawText(label, leftLabelX - labelWidth, y + textSize / 2, textPaint);
+            float labelBaseline = y - (fontMetrics.ascent + fontMetrics.descent) / 2f;
+            canvas.drawText(label, leftLabelX - labelWidth, labelBaseline, textPaint);
         }
 
         float totalMs = frameDurationMs * frames.size();
         String totalLabel = String.format("%.0f", totalMs);
         float totalWidth = textPaint.measureText(totalLabel);
-        canvas.drawText(totalLabel, right - totalWidth, bottom + textSize + 8, textPaint);
-        canvas.drawText("0", left, bottom + textSize + 8, textPaint);
+        float bottomLabelBaseline = bottom + textSize + 8;
+        canvas.drawText(totalLabel, right - totalWidth, bottomLabelBaseline, textPaint);
+        canvas.drawText("0", left, bottomLabelBaseline, textPaint);
         String msLabel = "ms";
         float msWidth = textPaint.measureText(msLabel);
-        float msBaseline = bottom + Math.max(8f, (bottomPadding - textSize) / 2f);
-        canvas.drawText(msLabel, left + (width - msWidth) / 2f, msBaseline, textPaint);
+        canvas.drawText(msLabel, left + (width - msWidth) / 2f, bottomLabelBaseline, textPaint);
     }
 
     private float[] limitMagnitudesToMaxFrequency(float[] magnitudes, int sampleRate) {
