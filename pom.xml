@@ -11,6 +11,7 @@
     <properties>
         <android.sdk.platform>34</android.sdk.platform>
         <android.build.tools>34.0.0</android.build.tools>
+        <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
         <java.version>1.8</java.version>
         <android.support.version>28.0.0</android.support.version>
     </properties>
@@ -43,7 +44,7 @@
             <artifactId>android</artifactId>
             <version>34</version>
             <scope>system</scope>
-            <systemPath>${env.ANDROID_HOME}/platforms/android-${android.sdk.platform}/android.jar</systemPath>
+            <systemPath>${android.sdk.home}/platforms/android-${android.sdk.platform}/android.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.android.support</groupId>
@@ -69,6 +70,31 @@
             <version>${android.support.version}</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>android-home</id>
+            <activation>
+                <property>
+                    <name>env.ANDROID_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <android.sdk.home>${env.ANDROID_HOME}</android.sdk.home>
+            </properties>
+        </profile>
+        <profile>
+            <id>android-sdk-root</id>
+            <activation>
+                <property>
+                    <name>env.ANDROID_SDK_ROOT</name>
+                </property>
+            </activation>
+            <properties>
+                <android.sdk.home>${env.ANDROID_SDK_ROOT}</android.sdk.home>
+            </properties>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
