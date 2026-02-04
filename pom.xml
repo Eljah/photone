@@ -16,6 +16,7 @@
         <aab.skip>true</aab.skip>
         <java.version>1.8</java.version>
         <android.support.version>28.0.0</android.support.version>
+        <android.maven.plugin.version>4.6.0</android.maven.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -104,34 +105,21 @@
             <name>Google Maven</name>
             <url>https://maven.google.com</url>
         </repository>
-        <repository>
-            <id>simpligility-public</id>
-            <name>Simpligility Public</name>
-            <url>https://repo.simpligility.org/content/groups/public/</url>
-        </repository>
     </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>simpligility-public</id>
-            <name>Simpligility Public</name>
-            <url>https://repo.simpligility.org/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <extensions>
             <extension>
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>4.6.0</version>
+                <version>${android.maven.plugin.version}</version>
             </extension>
         </extensions>
         <plugins>
             <plugin>
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>4.6.0</version>
+                <version>${android.maven.plugin.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>javax.xml.bind</groupId>
