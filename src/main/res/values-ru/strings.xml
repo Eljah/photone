@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Тренажёр вьетнамских тонов</string>
+    <string name="brand_tagline">Тренажер вьетнамских тонов</string>
     <string name="btn_demo">Демо тонов</string>
     <string name="btn_practice">Тренировка</string>
     <string name="btn_play_reference">Проиграть образец</string>
@@ -15,7 +16,7 @@
     <string name="label_demo_phrase">Демо: %1$s</string>
     <string name="btn_record_user">Записать мой вариант</string>
     <string name="btn_play_user_recording">Проиграть мою запись</string>
-    <string name="btn_voice_settings">Настройки голоса</string>
+    <string name="btn_voice_settings">Настройки</string>
     <string name="label_select_consonant">Согласная</string>
     <string name="label_select_base_vowel">Базовая гласная</string>
     <string name="label_select_tone">Тон</string>
@@ -37,7 +38,9 @@
     <string name="tone_result_match">Направление тона совпадает с эталоном.</string>
     <string name="tone_result_diff">Направление тона отличается от эталона.</string>
     <string name="tone_result_no_data">Недостаточно данных для анализа тона.</string>
-    <string name="title_voice_settings">Настройки голоса</string>
+    <string name="title_voice_settings">Настройки</string>
+    <string name="label_app_language">Язык приложения</string>
+    <string name="language_system_default">Системный</string>
     <string name="label_voice_gender">Пол голоса</string>
     <string name="label_voice_gender_hint">Применяется, если выбранный синтезатор речи поддерживает мужские и женские голоса.</string>
     <string name="label_voice_selection">Предпочитаемый голос</string>

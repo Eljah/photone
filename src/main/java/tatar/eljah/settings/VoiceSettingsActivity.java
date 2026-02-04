@@ -1,5 +1,6 @@
 package tatar.eljah.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
@@ -11,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -20,12 +22,21 @@ import tatar.eljah.tts.TtsVoicePreferences;
 
 public class VoiceSettingsActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.applyLocale(newBase));
+    }
+
     private static final Locale TARGET_LOCALE = Locale.forLanguageTag("vi-VN");
 
     private Spinner voiceSpinner;
     private ArrayAdapter<String> voiceAdapter;
     private final List<VoiceOption> voiceOptions = new ArrayList<>();
     private boolean isUpdatingVoices;
+    private Spinner localeSpinner;
+    private ArrayAdapter<String> localeAdapter;
+    private final List<LocaleOption> localeOptions = new ArrayList<>();
+    private boolean isUpdatingLocales;
     private TextToSpeech textToSpeech;
     private String pendingVoiceName;
 
@@ -34,6 +45,8 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_settings);
         setTitle(R.string.title_voice_settings);
+
+        setupLocaleSpinner();
 
         RadioGroup genderGroup = findViewById(R.id.radio_voice_gender);
         String current = TtsVoicePreferences.getVoiceGender(this);
@@ -108,8 +121,8 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
 
     private void setupVoiceSpinner() {
         voiceSpinner = findViewById(R.id.spinner_voice_selection);
-        voiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<String>());
-        voiceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        voiceAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_dark, new ArrayList<String>());
+        voiceAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         voiceSpinner.setAdapter(voiceAdapter);
         voiceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -126,6 +139,66 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
             }
         });
         updateVoiceOptions(new ArrayList<Voice>());
+    }
+
+    private void setupLocaleSpinner() {
+        localeSpinner = findViewById(R.id.spinner_app_language);
+        localeAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_dark, new ArrayList<String>());
+        localeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
+        localeSpinner.setAdapter(localeAdapter);
+        localeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isUpdatingLocales || position < 0 || position >= localeOptions.size()) {
+                    return;
+                }
+                LocaleOption option = localeOptions.get(position);
+                LocaleManager.setLocaleTag(VoiceSettingsActivity.this, option.localeTag);
+                recreate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        updateLocaleOptions();
+    }
+
+    private void updateLocaleOptions() {
+        isUpdatingLocales = true;
+        localeOptions.clear();
+        localeOptions.add(new LocaleOption(getString(R.string.language_system_default), ""));
+        List<String> localeTags = Arrays.asList(
+                "en", "ru", "vi", "de", "fr", "es", "ar", "ja", "zh", "pt", "tr", "tt");
+        Locale displayLocale = Locale.getDefault();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            displayLocale = getResources().getConfiguration().getLocales().get(0);
+        }
+        for (String tag : localeTags) {
+            Locale locale = Locale.forLanguageTag(tag);
+            String label = locale.getDisplayName(displayLocale);
+            localeOptions.add(new LocaleOption(capitalize(label), tag));
+        }
+        localeAdapter.clear();
+        for (LocaleOption option : localeOptions) {
+            localeAdapter.add(option.label);
+        }
+        localeAdapter.notifyDataSetChanged();
+        localeSpinner.setSelection(findPreferredLocaleIndex());
+        isUpdatingLocales = false;
+    }
+
+    private int findPreferredLocaleIndex() {
+        String selected = LocaleManager.getLocaleTag(this);
+        if (selected == null) {
+            selected = "";
+        }
+        for (int i = 0; i < localeOptions.size(); i++) {
+            if (selected.equals(localeOptions.get(i).localeTag)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private void updateVoiceOptions(List<Voice> voices) {
@@ -156,6 +229,13 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
         return 0;
     }
 
+    private String capitalize(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        return value.substring(0, 1).toUpperCase(Locale.getDefault()) + value.substring(1);
+    }
+
     private static class VoiceOption {
         private final String label;
         private final String voiceName;
@@ -163,6 +243,16 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
         private VoiceOption(String label, String voiceName) {
             this.label = label;
             this.voiceName = voiceName;
+        }
+    }
+
+    private static class LocaleOption {
+        private final String label;
+        private final String localeTag;
+
+        private LocaleOption(String label, String localeTag) {
+            this.label = label;
+            this.localeTag = localeTag;
         }
     }
 }

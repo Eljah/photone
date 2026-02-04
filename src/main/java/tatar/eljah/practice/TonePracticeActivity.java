@@ -1,5 +1,6 @@
 package tatar.eljah.practice;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -26,6 +27,7 @@ import tatar.eljah.R;
 import tatar.eljah.audio.PitchAnalyzer;
 import tatar.eljah.model.ToneSample;
 import tatar.eljah.model.VietnameseSyllable;
+import tatar.eljah.settings.LocaleManager;
 import tatar.eljah.tts.TtsVoiceSelector;
 import tatar.eljah.ui.SpectrogramView;
 import tatar.eljah.ui.ToneVisualizerView;
@@ -45,6 +47,11 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TonePracticeActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.applyLocale(newBase));
+    }
 
     private static final int REQUEST_RECORD_AUDIO = 1001;
     private static final String[] CONSONANTS = {"", "m", "n", "l", "b", "d", "g", "h", "k", "ng"};
@@ -182,16 +189,16 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private void setupSpinners() {
         ArrayAdapter<String> consonantAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, CONSONANTS);
-        consonantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, CONSONANTS);
+        consonantAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
 
         ArrayAdapter<String> vowelAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, VOWELS);
-        vowelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, VOWELS);
+        vowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
 
         ArrayAdapter<String> toneAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, TONES);
-        toneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item_dark, TONES);
+        toneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
 
         practiceConsonantSpinner.setAdapter(consonantAdapter);
         practiceVowelSpinner.setAdapter(vowelAdapter);
