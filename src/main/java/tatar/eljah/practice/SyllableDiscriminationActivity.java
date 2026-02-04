@@ -403,7 +403,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
                             outputBuffer.position(bufferInfo.offset);
                             outputBuffer.limit(bufferInfo.offset + bufferInfo.size);
                             outputBuffer.order(ByteOrder.LITTLE_ENDIAN);
-                            ShortBuffer shortBuffer = outputBuffer.asShortBuffer();
+                            ByteBuffer slice = outputBuffer.slice();
+                            slice.order(ByteOrder.LITTLE_ENDIAN);
+                            ShortBuffer shortBuffer = slice.asShortBuffer();
                             short[] temp = new short[bufferInfo.size / 2];
                             shortBuffer.get(temp);
                             if (channels > 1) {
