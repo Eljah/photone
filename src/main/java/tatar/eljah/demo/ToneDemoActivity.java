@@ -6,6 +6,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -81,7 +82,7 @@ public class ToneDemoActivity extends AppCompatActivity {
     private Spinner demoSecondConsonantSpinner;
     private Spinner demoSecondVowelSpinner;
     private Spinner demoSecondToneSpinner;
-    private TextView demoPhraseView;
+    private TextView demoTitleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,10 +104,11 @@ public class ToneDemoActivity extends AppCompatActivity {
         demoSecondConsonantSpinner = findViewById(R.id.spinner_demo_second_consonant);
         demoSecondVowelSpinner = findViewById(R.id.spinner_demo_second_vowel);
         demoSecondToneSpinner = findViewById(R.id.spinner_demo_second_tone);
-        demoPhraseView = findViewById(R.id.tv_demo_phrase);
+        demoTitleView = findViewById(R.id.tv_demo_title);
 
         setupSpinners();
         updateReferenceTitle();
+        updateDemoTitle();
         setupTextToSpeech();
 
         Button playSampleButton = findViewById(R.id.btn_play_reference);
@@ -138,7 +140,7 @@ public class ToneDemoActivity extends AppCompatActivity {
                         demoSecondToneSpinner
                 );
                 String phrase = first + " " + second;
-                demoPhraseView.setText(getString(R.string.label_demo_phrase, phrase));
+                demoTitleView.setText(getString(R.string.label_demo_phrase, phrase));
                 playTextWithAnalysis(phrase);
             }
         });
@@ -163,11 +165,15 @@ public class ToneDemoActivity extends AppCompatActivity {
 
         demoFirstConsonantSpinner.setAdapter(consonantAdapter);
         demoFirstVowelSpinner.setAdapter(vowelAdapter);
-        demoFirstToneSpinner.setAdapter(toneAdapter);
+        ArrayAdapter<String> demoFirstToneAdapter = createToneAdapter(demoFirstVowelSpinner);
+        demoFirstToneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
+        demoFirstToneSpinner.setAdapter(demoFirstToneAdapter);
 
         demoSecondConsonantSpinner.setAdapter(consonantAdapter);
         demoSecondVowelSpinner.setAdapter(vowelAdapter);
-        demoSecondToneSpinner.setAdapter(toneAdapter);
+        ArrayAdapter<String> demoSecondToneAdapter = createToneAdapter(demoSecondVowelSpinner);
+        demoSecondToneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
+        demoSecondToneSpinner.setAdapter(demoSecondToneAdapter);
 
         AdapterView.OnItemSelectedListener referenceListener = new AdapterView.OnItemSelectedListener() {
             @Override
@@ -182,6 +188,64 @@ public class ToneDemoActivity extends AppCompatActivity {
         sampleConsonantSpinner.setOnItemSelectedListener(referenceListener);
         sampleVowelSpinner.setOnItemSelectedListener(referenceListener);
         sampleToneSpinner.setOnItemSelectedListener(referenceListener);
+
+        AdapterView.OnItemSelectedListener demoListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateDemoTitle();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+
+        demoFirstConsonantSpinner.setOnItemSelectedListener(demoListener);
+        demoFirstToneSpinner.setOnItemSelectedListener(demoListener);
+        demoSecondConsonantSpinner.setOnItemSelectedListener(demoListener);
+        demoSecondToneSpinner.setOnItemSelectedListener(demoListener);
+
+        demoFirstVowelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                demoFirstToneAdapter.notifyDataSetChanged();
+                updateDemoTitle();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        demoSecondVowelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                demoSecondToneAdapter.notifyDataSetChanged();
+                updateDemoTitle();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private ArrayAdapter<String> createToneAdapter(final Spinner vowelSpinner) {
+        return new ArrayAdapter<String>(this, R.layout.spinner_item_dark, TONES) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                view.setText(getToneDisplay(vowelSpinner, position, false));
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                view.setText(getToneDisplay(vowelSpinner, position, true));
+                return view;
+            }
+        };
     }
 
     private void setupTextToSpeech() {
@@ -216,6 +280,33 @@ public class ToneDemoActivity extends AppCompatActivity {
                 sampleToneSpinner
         );
         referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
+    }
+
+    private void updateDemoTitle() {
+        String first = buildSyllable(
+                demoFirstConsonantSpinner,
+                demoFirstVowelSpinner,
+                demoFirstToneSpinner
+        );
+        String second = buildSyllable(
+                demoSecondConsonantSpinner,
+                demoSecondVowelSpinner,
+                demoSecondToneSpinner
+        );
+        demoTitleView.setText(getString(R.string.label_demo_phrase, first + " " + second));
+    }
+
+    private String getToneDisplay(Spinner vowelSpinner, int position, boolean includeLabel) {
+        String vowel = String.valueOf(vowelSpinner.getSelectedItem());
+        String[] forms = TONE_FORMS.get(vowel);
+        String tonedVowel = vowel;
+        if (forms != null && position >= 0 && position < forms.length) {
+            tonedVowel = forms[position];
+        }
+        if (includeLabel) {
+            return tonedVowel + " (" + TONES[position] + ")";
+        }
+        return tonedVowel;
     }
 
     private String applyTone(String vowel, String toneLabel) {

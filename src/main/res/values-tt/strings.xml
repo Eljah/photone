@@ -40,6 +40,8 @@
     <string name="tone_result_match">Тон юнәлеше үрнәк белән туры килә.</string>
     <string name="tone_result_diff">Тон юнәлеше үрнәктән аерыла.</string>
     <string name="tone_result_no_data">Тонны анализлау өчен мәгълүмат җитми.</string>
+    <string name="label_recognition_success">Танылды: %1$s</string>
+    <string name="label_recognition_failed">Тану уңышсыз булды.</string>
     <string name="title_voice_settings">Тавыш көйләүләре</string>
     <string name="label_app_language">Кушымта теле</string>
     <string name="language_display_format">%1$s (%2$s)</string>
