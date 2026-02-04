@@ -10,6 +10,7 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/tv_reference_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_sample_section"
@@ -50,7 +51,8 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:text=""
-            android:textColor="@color/brand_text_primary" />
+            android:textColor="@color/brand_text_primary"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btn_play_reference"
@@ -76,7 +78,7 @@
         <tatar.eljah.ui.ToneVisualizerView
             android:id="@+id/toneVisualizerView"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="100dp"
             android:layout_marginTop="16dp"/>
 
         <TextView
