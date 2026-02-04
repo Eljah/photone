@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">مدرب نغمات الفيتنامية</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">مدرب نغمات الفيتنامية</string>
     <string name="btn_demo">عرض النغمات</string>
     <string name="btn_practice">تدريب</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">صحيح!</string>
     <string name="label_wrong">ترتيب خاطئ.</string>
     <string name="label_no_round">شغّل زوجًا أولًا.</string>
+    <string name="label_already_scored">تم احتساب هذه الجولة بالفعل. أنشئ زوجًا جديدًا.</string>
     <string name="label_not_enough_variants">لا توجد بدائل كافية لهذا الاختيار.</string>
     <string name="label_tts_not_ready">تحويل النص إلى كلام غير جاهز.</string>
     <string name="title_sound_mode">تمييز الأصوات</string>
@@ -39,9 +41,15 @@
     <string name="tone_result_diff">اتجاه النغمة يختلف عن المرجع.</string>
     <string name="tone_result_no_data">لا توجد بيانات كافية لتحليل النغمة.</string>
     <string name="title_voice_settings">إعدادات الصوت</string>
+    <string name="label_app_language">لغة التطبيق</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
+    <string name="language_system_default">افتراضي النظام</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">جنس الصوت</string>
     <string name="label_voice_gender_hint">يُطبَّق عند توفر أصوات ذكر/أنثى في محرك تحويل النص إلى كلام المحدد.</string>
+    <string name="label_voice_selection">الصوت المفضل</string>
     <string name="voice_gender_auto">تلقائي</string>
     <string name="voice_gender_male">ذكر</string>
     <string name="voice_gender_female">أنثى</string>
+    <string name="voice_selection_auto">تلقائي</string>
 </resources>

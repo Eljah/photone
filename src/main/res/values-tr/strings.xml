@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Vietnamca Ton Antrenörü</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">Vietnamca Ton Antrenörü</string>
     <string name="btn_demo">Ton demosu</string>
     <string name="btn_practice">Alıştırma</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">Doğru!</string>
     <string name="label_wrong">Yanlış sıra.</string>
     <string name="label_no_round">Önce bir çift çalın.</string>
+    <string name="label_already_scored">Bu tur zaten puanlandı. Yeni bir çift oluşturun.</string>
     <string name="label_not_enough_variants">Bu seçim için yeterli varyant yok.</string>
     <string name="label_tts_not_ready">Metinden konuşmaya hazır değil.</string>
     <string name="title_sound_mode">Ses ayırt etme</string>
@@ -39,9 +41,15 @@
     <string name="tone_result_diff">Ton yönü referanstan farklı.</string>
     <string name="tone_result_no_data">Ton analiz etmek için yeterli veri yok.</string>
     <string name="title_voice_settings">Ses ayarları</string>
+    <string name="label_app_language">Uygulama dili</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
+    <string name="language_system_default">Sistem varsayılanı</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Ses cinsiyeti</string>
     <string name="label_voice_gender_hint">Seçili metinden konuşmaya motoru kadın/erkek sesler sunuyorsa uygulanır.</string>
+    <string name="label_voice_selection">Tercih edilen ses</string>
     <string name="voice_gender_auto">Otomatik</string>
     <string name="voice_gender_male">Erkek</string>
     <string name="voice_gender_female">Kadın</string>
+    <string name="voice_selection_auto">Otomatik</string>
 </resources>

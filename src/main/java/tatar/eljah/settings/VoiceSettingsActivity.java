@@ -182,7 +182,9 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
     private void updateLocaleOptions() {
         isUpdatingLocales = true;
         localeOptions.clear();
-        localeOptions.add(new LocaleOption(getString(R.string.language_system_default), ""));
+        String defaultOriginal = getString(R.string.language_system_default_original);
+        String defaultTranslated = getString(R.string.language_system_default);
+        localeOptions.add(new LocaleOption(formatLanguageLabel(defaultOriginal, defaultTranslated), ""));
         List<String> localeTags = Arrays.asList(
                 "en", "ru", "vi", "de", "fr", "es", "ar", "ja", "zh", "pt", "tr", "tt");
         Locale displayLocale = Locale.getDefault();
@@ -191,8 +193,9 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
         }
         for (String tag : localeTags) {
             Locale locale = Locale.forLanguageTag(tag);
-            String label = locale.getDisplayName(displayLocale);
-            localeOptions.add(new LocaleOption(capitalize(label), tag));
+            String originalLabel = capitalize(locale.getDisplayName(locale));
+            String translatedLabel = capitalize(locale.getDisplayName(displayLocale));
+            localeOptions.add(new LocaleOption(formatLanguageLabel(originalLabel, translatedLabel), tag));
         }
         localeAdapter.clear();
         for (LocaleOption option : localeOptions) {
@@ -249,6 +252,10 @@ public class VoiceSettingsActivity extends AppCompatActivity implements TextToSp
             return value;
         }
         return value.substring(0, 1).toUpperCase(Locale.getDefault()) + value.substring(1);
+    }
+
+    private String formatLanguageLabel(String original, String translated) {
+        return getString(R.string.language_display_format, original, translated);
     }
 
     private static class VoiceOption {

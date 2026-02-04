@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Luyện tập thanh điệu tiếng Việt</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">Luyện tập thanh điệu tiếng Việt</string>
     <string name="btn_demo">Bản demo thanh điệu</string>
     <string name="btn_practice">Luyện tập</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">Đúng!</string>
     <string name="label_wrong">Sai thứ tự.</string>
     <string name="label_no_round">Hãy phát một cặp trước.</string>
+    <string name="label_already_scored">Vòng này đã được chấm điểm. Hãy tạo một cặp mới.</string>
     <string name="label_not_enough_variants">Không đủ biến thể cho lựa chọn này.</string>
     <string name="label_tts_not_ready">Chuyển văn bản thành giọng nói chưa sẵn sàng.</string>
     <string name="title_sound_mode">Phân biệt âm</string>
@@ -39,9 +41,15 @@
     <string name="tone_result_diff">Hướng thanh điệu khác với mẫu chuẩn.</string>
     <string name="tone_result_no_data">Không đủ dữ liệu để phân tích thanh điệu.</string>
     <string name="title_voice_settings">Cài đặt giọng nói</string>
+    <string name="label_app_language">Ngôn ngữ ứng dụng</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
+    <string name="language_system_default">Mặc định hệ thống</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Giới tính giọng nói</string>
     <string name="label_voice_gender_hint">Áp dụng khi công cụ chuyển văn bản thành giọng nói đã chọn có giọng nam/nữ.</string>
+    <string name="label_voice_selection">Giọng nói ưu tiên</string>
     <string name="voice_gender_auto">Tự động</string>
     <string name="voice_gender_male">Nam</string>
     <string name="voice_gender_female">Nữ</string>
+    <string name="voice_selection_auto">Tự động</string>
 </resources>

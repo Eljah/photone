@@ -5,18 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_app_language"
-        android:textStyle="bold"
-        android:textColor="@color/brand_text_primary" />
-
-    <Spinner
-        android:id="@+id/spinner_app_language"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:text="@string/label_app_language"
+            android:textStyle="bold"
+            android:textColor="@color/brand_text_primary" />
+
+        <Spinner
+            android:id="@+id/spinner_app_language"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -61,17 +69,25 @@
         android:text="@string/label_voice_gender_hint"
         android:textColor="@color/brand_text_secondary" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/label_voice_selection"
-        android:textStyle="bold"
-        android:textColor="@color/brand_text_primary" />
-
-    <Spinner
-        android:id="@+id/spinner_voice_selection"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:text="@string/label_voice_selection"
+            android:textStyle="bold"
+            android:textColor="@color/brand_text_primary" />
+
+        <Spinner
+            android:id="@+id/spinner_voice_selection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 </LinearLayout>

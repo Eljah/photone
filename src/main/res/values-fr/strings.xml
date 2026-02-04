@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Entraîneur de tons vietnamiens</string>
+    <string name="brand_name">PhoTone</string>
     <string name="brand_tagline">Entraîneur de tons vietnamiens</string>
     <string name="btn_demo">Démo des tons</string>
     <string name="btn_practice">Entraînement</string>
@@ -31,6 +32,7 @@
     <string name="label_correct">Correct !</string>
     <string name="label_wrong">Ordre incorrect.</string>
     <string name="label_no_round">Générez d\'abord une paire.</string>
+    <string name="label_already_scored">Ce tour est déjà comptabilisé. Générez une nouvelle paire.</string>
     <string name="label_not_enough_variants">Pas assez de variantes pour cette sélection.</string>
     <string name="label_tts_not_ready">La synthèse vocale n\'est pas prête.</string>
     <string name="title_sound_mode">Discrimination des sons</string>
@@ -39,9 +41,15 @@
     <string name="tone_result_diff">La direction du ton diffère de la référence.</string>
     <string name="tone_result_no_data">Pas assez de données pour analyser le ton.</string>
     <string name="title_voice_settings">Paramètres de voix</string>
+    <string name="label_app_language">Langue de l\'application</string>
+    <string name="language_display_format">%1$s (%2$s)</string>
+    <string name="language_system_default">Par défaut du système</string>
+    <string name="language_system_default_original">System default</string>
     <string name="label_voice_gender">Genre de la voix</string>
     <string name="label_voice_gender_hint">Appliqué lorsque le moteur de synthèse vocale sélectionné propose des voix genrées.</string>
+    <string name="label_voice_selection">Voix préférée</string>
     <string name="voice_gender_auto">Automatique</string>
     <string name="voice_gender_male">Masculin</string>
     <string name="voice_gender_female">Féminin</string>
+    <string name="voice_selection_auto">Automatique</string>
 </resources>
