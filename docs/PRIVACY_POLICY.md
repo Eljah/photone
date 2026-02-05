@@ -1,40 +1,42 @@
 # Privacy Policy
 
-_Last updated: <YYYY-MM-DD>_
+_Last updated: 2026-02-05_
 
-This Privacy Policy describes how **<App Name>** (“we,” “our,” or “us”) collects, uses, and shares information when you use the **<App Name>** mobile application (the “App”).
+This Privacy Policy describes how **Vietnamese Tone Trainer** ("we," "our," or "us") handles data when you use the mobile application (the "App").
 
-## 1) Information we collect
+## 1) Data we process
 
-### Audio / microphone data
-The App requests access to your device microphone to analyze speech and provide real-time feedback. Audio is used **only for on-device analysis** and is **not stored or transmitted** by default.
+### Microphone / audio input
+The App requests microphone access (`android.permission.RECORD_AUDIO`) only to provide speech and pronunciation training features.
 
-### Device information
-We do not intentionally collect device identifiers. If system logs or crash reports are enabled by the OS, they may include limited device information.
+- Audio is processed locally on your device.
+- We do not upload audio recordings to our servers.
+- We do not sell audio data.
 
-## 2) How we use information
-We use microphone input solely to provide the App’s core functionality (speech analysis and feedback). We do not use audio data for advertising or profiling.
+### Technical data
+The App does not intentionally collect personal identifiers. Android/Google Play systems may process limited technical data (for example, crash diagnostics) under their own privacy terms.
 
-## 3) Sharing of information
-We do **not** sell, trade, or share personal information with third parties. We do not transmit audio recordings to any server by default.
+## 2) Why we process data
+We process microphone input only to provide core functionality: tone and pronunciation analysis, training feedback, and related learning features.
+
+## 3) Data sharing
+We do not sell, rent, or share your personal data with third parties for advertising.
 
 ## 4) Data retention
-We do not store microphone audio. Any transient audio data is processed in memory and discarded immediately after analysis.
+We do not store microphone recordings on our servers. Audio is processed in memory during use and then discarded.
 
-## 5) Children’s privacy
-The App is not directed to children under 13. We do not knowingly collect personal information from children.
+## 5) Children
+The App is not specifically directed to children under 13 unless explicitly stated in the store listing. If we learn that personal data from a child was provided to us in error, we will delete it where applicable.
 
-## 6) Security
-We take reasonable measures to protect user data; however, no method of transmission or storage is 100% secure.
+## 6) Your choices
+- You can deny or revoke microphone permission in Android settings at any time.
+- If microphone permission is disabled, voice-related features may not work.
 
-## 7) Your choices
-You can revoke microphone access at any time in your device settings. The App may not function correctly without microphone access.
+## 7) Security
+We apply reasonable technical and organizational measures to protect data processed by the App. No method of transmission or storage is 100% secure.
 
-## 8) Changes to this policy
-We may update this policy from time to time. We will revise the “Last updated” date above and, if changes are significant, provide notice within the App or on our website.
+## 8) Changes to this Privacy Policy
+We may update this Privacy Policy from time to time. The latest version will always be available at the same URL, and the "Last updated" date will be revised.
 
-## 9) Contact us
-If you have questions about this policy, contact us at:
-
-- Email: <support@example.com>
-- Website: <https://example.com>
+## 9) Contact
+For privacy questions, use the developer contact shown on the Google Play store listing for this App.
