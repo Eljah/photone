@@ -7,7 +7,7 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
-APP_VERSION_CODE="${APP_VERSION_CODE:-5}"
+APP_VERSION_CODE="${APP_VERSION_CODE:-6}"
 APP_VERSION_NAME="${APP_VERSION_NAME:-2.2}"
 BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
@@ -45,6 +45,8 @@ MANIFEST_PATH="$WORK_DIR/AndroidManifest.xml"
 cp "$MANIFEST_TEMPLATE" "$MANIFEST_PATH"
 sed -i -E 's/android:versionCode="[0-9]+"/android:versionCode="'"$APP_VERSION_CODE"'"/' "$MANIFEST_PATH"
 sed -i -E 's/android:versionName="[^"]+"/android:versionName="'"$APP_VERSION_NAME"'"/' "$MANIFEST_PATH"
+
+echo "Building AAB with versionCode=$APP_VERSION_CODE versionName=$APP_VERSION_NAME targetSdk=$ANDROID_PLATFORM"
 
 mkdir -p "$COMPILED_RES_DIR"
 RES_DIRS=("$REPO_ROOT/src/main/res")
@@ -89,11 +91,14 @@ fi
 )
 
 mkdir -p "$REPO_ROOT/target"
-AAB_PATH="$REPO_ROOT/target/app-release.aab"
+AAB_PATH="$REPO_ROOT/target/app-release-v${APP_VERSION_CODE}.aab"
+LATEST_AAB_PATH="$REPO_ROOT/target/app-release.aab"
 java -jar "$BUNDLETOOL_JAR" build-bundle \
   --modules="$MODULE_ZIP" \
   --output="$AAB_PATH" \
   --overwrite
+
+cp "$AAB_PATH" "$LATEST_AAB_PATH"
 
 jarsigner \
   -keystore "$KEYSTORE_PATH" \
