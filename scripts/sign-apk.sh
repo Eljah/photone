@@ -7,10 +7,14 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 
-BUILD_TOOLS_VERSION="${BUILD_TOOLS_VERSION:-34.0.0}"
+BUILD_TOOLS_VERSION="${BUILD_TOOLS_VERSION:-35.0.1}"
+
+if [[ -z "${ANDROID_HOME:-}" && -n "${ANDROID_SDK_ROOT:-}" ]]; then
+  export ANDROID_HOME="$ANDROID_SDK_ROOT"
+fi
 
 if [[ -z "${ANDROID_HOME:-}" ]]; then
-  echo "ANDROID_HOME is not set." >&2
+  echo "ANDROID_HOME is not set (or ANDROID_SDK_ROOT is missing)." >&2
   exit 1
 fi
 

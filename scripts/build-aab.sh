@@ -6,13 +6,17 @@ KEYSTORE_PATH="$REPO_ROOT/keystore/release-key.jks"
 KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
-ANDROID_PLATFORM="${ANDROID_PLATFORM:-34}"
-BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-34.0.0}"
+ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
+BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
 "$REPO_ROOT/scripts/prepare-keystore.sh"
 
+if [[ -z "${ANDROID_HOME:-}" && -n "${ANDROID_SDK_ROOT:-}" ]]; then
+  export ANDROID_HOME="$ANDROID_SDK_ROOT"
+fi
+
 if [[ -z "${ANDROID_HOME:-}" ]]; then
-  echo "ANDROID_HOME is not set." >&2
+  echo "ANDROID_HOME is not set (or ANDROID_SDK_ROOT is missing)." >&2
   exit 1
 fi
 

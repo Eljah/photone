@@ -9,8 +9,8 @@
     <packaging>apk</packaging>
 
     <properties>
-        <android.sdk.platform>34</android.sdk.platform>
-        <android.build.tools>28.0.3</android.build.tools>
+        <android.compile.sdk>35</android.compile.sdk>
+        <android.build.tools>35.0.1</android.build.tools>
         <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
         <android.sdk.path>${android.sdk.home}</android.sdk.path>
         <aab.skip>true</aab.skip>
@@ -65,9 +65,9 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>34</version>
+            <version>35</version>
             <scope>system</scope>
-            <systemPath>${android.sdk.home}/platforms/android-${android.sdk.platform}/android.jar</systemPath>
+            <systemPath>${android.sdk.home}/platforms/android-${android.compile.sdk}/android.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.android.support</groupId>
@@ -164,7 +164,7 @@
                 </dependencies>
                 <configuration>
                     <sdk>
-                        <platform>${android.sdk.platform}</platform>
+                        <platform>${android.compile.sdk}</platform>
                         <buildTools>${android.build.tools}</buildTools>
                     </sdk>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
