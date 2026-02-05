@@ -9,6 +9,7 @@
     <packaging>apk</packaging>
 
     <properties>
+        <android.min.sdk>21</android.min.sdk>
         <android.compile.sdk>35</android.compile.sdk>
         <android.build.tools>35.0.1</android.build.tools>
         <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
@@ -167,6 +168,10 @@
                         <platform>${android.compile.sdk}</platform>
                         <buildTools>${android.build.tools}</buildTools>
                     </sdk>
+                    <manifest>
+                        <minSdkVersion>${android.min.sdk}</minSdkVersion>
+                        <targetSdkVersion>${android.compile.sdk}</targetSdkVersion>
+                    </manifest>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <failOnDuplicatePackages>false</failOnDuplicatePackages>
                     <dexCoreLibrary>true</dexCoreLibrary>
