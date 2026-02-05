@@ -11,6 +11,8 @@
     <properties>
         <android.min.sdk>21</android.min.sdk>
         <android.compile.sdk>35</android.compile.sdk>
+        <android.version.code>5</android.version.code>
+        <android.version.name>2.2</android.version.name>
         <android.build.tools>35.0.1</android.build.tools>
         <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
         <android.sdk.path>${android.sdk.home}</android.sdk.path>
@@ -171,6 +173,8 @@
                     <manifest>
                         <minSdkVersion>${android.min.sdk}</minSdkVersion>
                         <targetSdkVersion>${android.compile.sdk}</targetSdkVersion>
+                        <versionCode>${android.version.code}</versionCode>
+                        <versionName>${android.version.name}</versionName>
                     </manifest>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <failOnDuplicatePackages>false</failOnDuplicatePackages>
@@ -216,6 +220,11 @@
                             <skip>${aab.skip}</skip>
                             <executable>${project.basedir}/scripts/build-aab.sh</executable>
                             <workingDirectory>${project.basedir}</workingDirectory>
+                            <environmentVariables>
+                                <ANDROID_PLATFORM>${android.compile.sdk}</ANDROID_PLATFORM>
+                                <APP_VERSION_CODE>${android.version.code}</APP_VERSION_CODE>
+                                <APP_VERSION_NAME>${android.version.name}</APP_VERSION_NAME>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>

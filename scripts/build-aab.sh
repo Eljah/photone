@@ -7,6 +7,8 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
+APP_VERSION_CODE="${APP_VERSION_CODE:-5}"
+APP_VERSION_NAME="${APP_VERSION_NAME:-2.2}"
 BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
 "$REPO_ROOT/scripts/prepare-keystore.sh"
@@ -37,6 +39,12 @@ WORK_DIR=$(mktemp -d)
 COMPILED_RES_DIR="$WORK_DIR/compiled-res"
 BASE_APK="$WORK_DIR/base.apk"
 MODULE_ZIP="$WORK_DIR/base.zip"
+MANIFEST_TEMPLATE="$REPO_ROOT/src/main/AndroidManifest.xml"
+MANIFEST_PATH="$WORK_DIR/AndroidManifest.xml"
+
+cp "$MANIFEST_TEMPLATE" "$MANIFEST_PATH"
+sed -i -E 's/android:versionCode="[0-9]+"/android:versionCode="'"$APP_VERSION_CODE"'"/' "$MANIFEST_PATH"
+sed -i -E 's/android:versionName="[^"]+"/android:versionName="'"$APP_VERSION_NAME"'"/' "$MANIFEST_PATH"
 
 mkdir -p "$COMPILED_RES_DIR"
 RES_DIRS=("$REPO_ROOT/src/main/res")
@@ -59,7 +67,7 @@ done
 
 "$AAPT2" link --proto-format \
   -I "$ANDROID_HOME/platforms/android-$ANDROID_PLATFORM/android.jar" \
-  --manifest "$REPO_ROOT/src/main/AndroidManifest.xml" \
+  --manifest "$MANIFEST_PATH" \
   --auto-add-overlay \
   -o "$BASE_APK" \
   "${COMPILED_ARGS[@]}"
