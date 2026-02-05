@@ -11,8 +11,8 @@
     <string name="label_sample_section">Үрнәк</string>
     <string name="label_discrimination_section">Аеру</string>
     <string name="label_demo_section">Демо</string>
-    <string name="label_first_syllable">Беренче иҗек</string>
-    <string name="label_second_syllable">Икенче иҗек</string>
+    <string name="label_first_syllable">1 иҗек</string>
+    <string name="label_second_syllable">2 иҗек</string>
     <string name="label_sample_selected">Үрнәк: %1$s</string>
     <string name="label_demo_phrase">Демо: %1$s</string>
     <string name="btn_record_user">Үз версиямне яздырырга</string>
@@ -54,4 +54,5 @@
     <string name="voice_gender_male">Ир-ат</string>
     <string name="voice_gender_female">Хатын-кыз</string>
     <string name="voice_selection_auto">Автоматик</string>
+    <string name="label_recognition_in_progress">Сөйләм таныла…</string>
 </resources>

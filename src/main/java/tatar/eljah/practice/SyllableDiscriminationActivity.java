@@ -211,6 +211,8 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
                 checkAnswer();
             }
         });
+
+        updateCheckAnswerEnabled();
     }
 
     @Override
@@ -413,17 +415,20 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         if (checkAnswerButton == null) {
             return;
         }
+        boolean enabled = true;
         if (hasAnswered || correctFirst == null || correctSecond == null) {
-            checkAnswerButton.setEnabled(false);
-            return;
+            enabled = false;
+        } else {
+            Object first = firstChoiceSpinner.getSelectedItem();
+            Object second = secondChoiceSpinner.getSelectedItem();
+            if (first == null || second == null) {
+                enabled = false;
+            } else {
+                enabled = !first.equals(second);
+            }
         }
-        Object first = firstChoiceSpinner.getSelectedItem();
-        Object second = secondChoiceSpinner.getSelectedItem();
-        if (first == null || second == null) {
-            checkAnswerButton.setEnabled(false);
-            return;
-        }
-        checkAnswerButton.setEnabled(!first.equals(second));
+        checkAnswerButton.setEnabled(enabled);
+        checkAnswerButton.setAlpha(enabled ? 1f : 0.5f);
     }
 
     private void updateScore() {

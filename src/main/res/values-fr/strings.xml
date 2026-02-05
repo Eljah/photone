@@ -11,8 +11,8 @@
     <string name="label_sample_section">Référence</string>
     <string name="label_discrimination_section">Discrimination</string>
     <string name="label_demo_section">Démo</string>
-    <string name="label_first_syllable">Première syllabe</string>
-    <string name="label_second_syllable">Deuxième syllabe</string>
+    <string name="label_first_syllable">1 syll.</string>
+    <string name="label_second_syllable">2 syll.</string>
     <string name="label_sample_selected">Référence : %1$s</string>
     <string name="label_demo_phrase">Démo : %1$s</string>
     <string name="btn_record_user">Enregistrer ma version</string>
@@ -52,4 +52,7 @@
     <string name="voice_gender_male">Masculin</string>
     <string name="voice_gender_female">Féminin</string>
     <string name="voice_selection_auto">Automatique</string>
+    <string name="label_recognition_success">Reconnu : %1$s</string>
+    <string name="label_recognition_failed">La reconnaissance a échoué.</string>
+    <string name="label_recognition_in_progress">Reconnaissance vocale en cours…</string>
 </resources>
