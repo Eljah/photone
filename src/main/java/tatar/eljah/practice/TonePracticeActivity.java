@@ -121,6 +121,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     private boolean hasUserRecording = false;
     private final List<float[]> userSpectrogramFrames = new ArrayList<>();
     private int userSpectrogramSampleRate = 0;
+    private long userRecordingStateToken = 0L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable stopRecordingRunnable = new Runnable() {
@@ -631,6 +632,7 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private void resetUserRecording() {
         stopUserPlayback();
+        userRecordingStateToken++;
         hasUserRecording = false;
         deleteTempFile(userRecordingFile);
         userRecordingFile = null;
@@ -726,7 +728,9 @@ public class TonePracticeActivity extends AppCompatActivity {
         if (!hasUserRecording || userRecordingFile == null || !userRecordingFile.exists()) {
             return;
         }
-        renderSavedUserSpectrogram();
+        long expectedStateToken = userRecordingStateToken;
+        String expectedRecordingPath = userRecordingFile.getAbsolutePath();
+        renderSavedUserSpectrogram(expectedStateToken, expectedRecordingPath);
         stopUserPlayback();
         userPlayer = new MediaPlayer();
         try {
@@ -749,7 +753,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         btnPlayUserRecording.setEnabled(hasUserRecording && userRecordingFile != null && userRecordingFile.exists());
     }
 
-    private void renderSavedUserSpectrogram() {
+    private void renderSavedUserSpectrogram(long expectedStateToken, String expectedRecordingPath) {
         if (spectrogramView == null) {
             return;
         }
@@ -764,6 +768,14 @@ public class TonePracticeActivity extends AppCompatActivity {
             sampleRate = userSpectrogramSampleRate;
         }
         if (frames.isEmpty() || sampleRate == 0) {
+            return;
+        }
+        File currentRecording = userRecordingFile;
+        if (isRecording
+                || expectedStateToken != userRecordingStateToken
+                || currentRecording == null
+                || !currentRecording.exists()
+                || !currentRecording.getAbsolutePath().equals(expectedRecordingPath)) {
             return;
         }
         spectrogramView.clear();
