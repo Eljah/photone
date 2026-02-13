@@ -35,13 +35,22 @@
                 android:id="@+id/spinner_sample_vowel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
 
             <Spinner
                 android:id="@+id/spinner_sample_tone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
+
+            <Spinner
+                android:id="@+id/spinner_sample_final_consonant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="0dp" />
         </LinearLayout>
 
         <Button
@@ -95,13 +104,22 @@
                 android:id="@+id/spinner_demo_first_vowel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
 
             <Spinner
                 android:id="@+id/spinner_demo_first_tone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
+
+            <Spinner
+                android:id="@+id/spinner_demo_first_final_consonant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="0dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -129,13 +147,22 @@
                 android:id="@+id/spinner_demo_second_vowel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
 
             <Spinner
                 android:id="@+id/spinner_demo_second_tone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
+
+            <Spinner
+                android:id="@+id/spinner_demo_second_final_consonant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="0dp" />
         </LinearLayout>
 
         <Button
