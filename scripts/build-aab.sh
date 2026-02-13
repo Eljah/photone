@@ -37,6 +37,8 @@ fi
 
 WORK_DIR=$(mktemp -d)
 COMPILED_RES_DIR="$WORK_DIR/compiled-res"
+AAR_DEPS_DIR="$WORK_DIR/aar-deps"
+AAR_UNPACK_DIR="$WORK_DIR/aar-unpacked"
 BASE_APK="$WORK_DIR/base.apk"
 MODULE_ZIP="$WORK_DIR/base.zip"
 MANIFEST_TEMPLATE="$REPO_ROOT/src/main/AndroidManifest.xml"
@@ -55,6 +57,22 @@ if [[ -d "$REPO_ROOT/target/unpacked-libs" ]]; then
     RES_DIRS+=("$lib_res")
   done < <(find "$REPO_ROOT/target/unpacked-libs" -type d -name res -print0)
 fi
+
+mkdir -p "$AAR_DEPS_DIR" "$AAR_UNPACK_DIR"
+mvn -q -f "$REPO_ROOT/pom.xml" dependency:copy-dependencies \
+  -DincludeTypes=aar \
+  -DoutputDirectory="$AAR_DEPS_DIR" \
+  >/dev/null
+
+while IFS= read -r -d '' aar_file; do
+  aar_name="$(basename "$aar_file" .aar)"
+  unpack_dir="$AAR_UNPACK_DIR/$aar_name"
+  mkdir -p "$unpack_dir"
+  unzip -q -o "$aar_file" -d "$unpack_dir"
+  if [[ -d "$unpack_dir/res" ]]; then
+    RES_DIRS+=("$unpack_dir/res")
+  fi
+done < <(find "$AAR_DEPS_DIR" -type f -name '*.aar' -print0)
 
 COMPILED_ARGS=()
 index=0
