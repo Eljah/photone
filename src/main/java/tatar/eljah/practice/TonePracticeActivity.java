@@ -119,6 +119,8 @@ public class TonePracticeActivity extends AppCompatActivity {
     private int userSampleRate;
     private MediaPlayer userPlayer;
     private boolean hasUserRecording = false;
+    private final List<float[]> userSpectrogramFrames = new ArrayList<>();
+    private int userSpectrogramSampleRate = 0;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable stopRecordingRunnable = new Runnable() {
@@ -560,7 +562,6 @@ public class TonePracticeActivity extends AppCompatActivity {
         shouldRecognizeSpeech = recognizeSpeech;
 
         userPitch.clear();
-        hasUserRecording = false;
         resetUserRecording();
         visualizerView.setUserData(userPitch);
         if (spectrogramView != null) {
@@ -586,13 +587,21 @@ public class TonePracticeActivity extends AppCompatActivity {
         }, new PitchAnalyzer.SpectrumListener() {
             @Override
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
+                final float[] frameCopy = new float[magnitudes.length];
+                System.arraycopy(magnitudes, 0, frameCopy, 0, magnitudes.length);
+                synchronized (userSpectrogramFrames) {
+                    userSpectrogramFrames.add(frameCopy);
+                    if (userSpectrogramSampleRate == 0) {
+                        userSpectrogramSampleRate = sampleRate;
+                    }
+                }
                 if (spectrogramView == null) {
                     return;
                 }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        spectrogramView.addSpectrumFrame(magnitudes, sampleRate, magnitudes.length * 2);
+                        spectrogramView.addSpectrumFrame(frameCopy, sampleRate, frameCopy.length * 2);
                     }
                 });
             }
@@ -622,10 +631,15 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private void resetUserRecording() {
         stopUserPlayback();
+        hasUserRecording = false;
         deleteTempFile(userRecordingFile);
         userRecordingFile = null;
         userPcmStream = new ByteArrayOutputStream();
         userSampleRate = 0;
+        synchronized (userSpectrogramFrames) {
+            userSpectrogramFrames.clear();
+            userSpectrogramSampleRate = 0;
+        }
         updatePlayUserRecordingEnabled();
     }
 
@@ -712,7 +726,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         if (!hasUserRecording || userRecordingFile == null || !userRecordingFile.exists()) {
             return;
         }
-        renderUserSpectrogramFromRecording();
+        renderSavedUserSpectrogram();
         stopUserPlayback();
         userPlayer = new MediaPlayer();
         try {
@@ -735,46 +749,27 @@ public class TonePracticeActivity extends AppCompatActivity {
         btnPlayUserRecording.setEnabled(hasUserRecording && userRecordingFile != null && userRecordingFile.exists());
     }
 
-    private void renderUserSpectrogramFromRecording() {
-        if (userRecordingFile == null || !userRecordingFile.exists()) {
+    private void renderSavedUserSpectrogram() {
+        if (spectrogramView == null) {
             return;
         }
-        final File recordingFile = userRecordingFile;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final WavData wavData;
-                try {
-                    wavData = readWavFile(recordingFile);
-                } catch (IOException e) {
-                    return;
-                }
-                final List<float[]> spectrumFrames = new ArrayList<>();
-                pitchAnalyzer.analyzePcm(
-                        wavData.samples,
-                        wavData.sampleRate,
-                        null,
-                        new PitchAnalyzer.SpectrumListener() {
-                            @Override
-                            public void onSpectrum(float[] magnitudes, int sampleRate) {
-                                spectrumFrames.add(magnitudes);
-                            }
-                        }
-                );
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (spectrogramView == null) {
-                            return;
-                        }
-                        spectrogramView.clear();
-                        for (float[] frame : spectrumFrames) {
-                            spectrogramView.addSpectrumFrame(frame, wavData.sampleRate, frame.length * 2);
-                        }
-                    }
-                });
+        final List<float[]> frames = new ArrayList<>();
+        final int sampleRate;
+        synchronized (userSpectrogramFrames) {
+            for (float[] sourceFrame : userSpectrogramFrames) {
+                float[] copy = new float[sourceFrame.length];
+                System.arraycopy(sourceFrame, 0, copy, 0, sourceFrame.length);
+                frames.add(copy);
             }
-        }).start();
+            sampleRate = userSpectrogramSampleRate;
+        }
+        if (frames.isEmpty() || sampleRate == 0) {
+            return;
+        }
+        spectrogramView.clear();
+        for (float[] frame : frames) {
+            spectrogramView.addSpectrumFrame(frame, sampleRate, frame.length * 2);
+        }
     }
 
     private void stopUserPlayback() {
