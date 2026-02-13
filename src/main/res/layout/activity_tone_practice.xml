@@ -35,13 +35,22 @@
                 android:id="@+id/spinner_practice_vowel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
 
             <Spinner
                 android:id="@+id/spinner_practice_tone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="0dp" />
+
+            <Spinner
+                android:id="@+id/spinner_practice_final_consonant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="0dp" />
         </LinearLayout>
 
         <TextView

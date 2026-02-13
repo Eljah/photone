@@ -61,6 +61,9 @@ public class TonePracticeActivity extends AppCompatActivity {
     private static final String[] VOWELS = {
             "a", "ă", "â", "e", "ê", "i", "o", "ô", "ơ", "u", "ư", "y"
     };
+    private static final String[] FINAL_CONSONANTS = {
+            "", "c", "ch", "m", "n", "ng", "nh", "p", "t"
+    };
     private static final String[] TONES = {"ngang", "sắc", "huyền", "hỏi", "ngã", "nặng"};
     private static final Map<String, String[]> TONE_FORMS = new HashMap<>();
 
@@ -90,6 +93,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     private SpectrogramView spectrogramView;
     private Spinner practiceConsonantSpinner;
     private Spinner practiceVowelSpinner;
+    private Spinner practiceFinalConsonantSpinner;
     private Spinner practiceToneSpinner;
 
     private VietnameseSyllable targetSyllable;
@@ -139,6 +143,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         spectrogramView = findViewById(R.id.spectrogramView);
         practiceConsonantSpinner = findViewById(R.id.spinner_practice_consonant);
         practiceVowelSpinner = findViewById(R.id.spinner_practice_vowel);
+        practiceFinalConsonantSpinner = findViewById(R.id.spinner_practice_final_consonant);
         practiceToneSpinner = findViewById(R.id.spinner_practice_tone);
 
         pitchAnalyzer = new PitchAnalyzer();
@@ -198,12 +203,17 @@ public class TonePracticeActivity extends AppCompatActivity {
                 R.layout.spinner_item_dark, VOWELS);
         vowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
 
+        ArrayAdapter<String> finalConsonantAdapter = new ArrayAdapter<>(this,
+                R.layout.spinner_item_dark, FINAL_CONSONANTS);
+        finalConsonantAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
+
         ArrayAdapter<String> toneAdapter = new ArrayAdapter<>(this,
                 R.layout.spinner_item_dark, TONES);
         toneAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
 
         practiceConsonantSpinner.setAdapter(consonantAdapter);
         practiceVowelSpinner.setAdapter(vowelAdapter);
+        practiceFinalConsonantSpinner.setAdapter(finalConsonantAdapter);
         practiceToneSpinner.setAdapter(toneAdapter);
 
         AdapterView.OnItemSelectedListener updateListener = new AdapterView.OnItemSelectedListener() {
@@ -218,11 +228,17 @@ public class TonePracticeActivity extends AppCompatActivity {
         };
         practiceConsonantSpinner.setOnItemSelectedListener(updateListener);
         practiceVowelSpinner.setOnItemSelectedListener(updateListener);
+        practiceFinalConsonantSpinner.setOnItemSelectedListener(updateListener);
         practiceToneSpinner.setOnItemSelectedListener(updateListener);
     }
 
     private void updateTargetFromSelection() {
-        String syllable = buildSyllable(practiceConsonantSpinner, practiceVowelSpinner, practiceToneSpinner);
+        String syllable = buildSyllable(
+                practiceConsonantSpinner,
+                practiceVowelSpinner,
+                practiceFinalConsonantSpinner,
+                practiceToneSpinner
+        );
         String tone = String.valueOf(practiceToneSpinner.getSelectedItem());
         targetSyllable = new VietnameseSyllable(syllable, tone, 0);
         referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
@@ -233,12 +249,18 @@ public class TonePracticeActivity extends AppCompatActivity {
         }
     }
 
-    private String buildSyllable(Spinner consonantSpinner, Spinner vowelSpinner, Spinner toneSpinner) {
+    private String buildSyllable(
+            Spinner consonantSpinner,
+            Spinner vowelSpinner,
+            Spinner finalConsonantSpinner,
+            Spinner toneSpinner
+    ) {
         String consonant = String.valueOf(consonantSpinner.getSelectedItem());
         String vowel = String.valueOf(vowelSpinner.getSelectedItem());
+        String finalConsonant = String.valueOf(finalConsonantSpinner.getSelectedItem());
         String tone = String.valueOf(toneSpinner.getSelectedItem());
         String tonedVowel = applyTone(vowel, tone);
-        return (consonant + tonedVowel).trim();
+        return (consonant + tonedVowel + finalConsonant).trim();
     }
 
     private String applyTone(String vowel, String toneLabel) {
