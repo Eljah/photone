@@ -118,6 +118,10 @@ public class TonePracticeActivity extends AppCompatActivity {
     private ByteArrayOutputStream userPcmStream;
     private int userSampleRate;
     private MediaPlayer userPlayer;
+    private boolean hasUserRecording = false;
+    private final List<float[]> userSpectrogramFrames = new ArrayList<>();
+    private int userSpectrogramSampleRate = 0;
+    private long userRecordingStateToken = 0L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable stopRecordingRunnable = new Runnable() {
@@ -185,7 +189,7 @@ public class TonePracticeActivity extends AppCompatActivity {
             }
         });
 
-        btnPlayUserRecording.setEnabled(false);
+        updatePlayUserRecordingEnabled();
         btnPlayUserRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,6 +246,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         String tone = String.valueOf(practiceToneSpinner.getSelectedItem());
         targetSyllable = new VietnameseSyllable(syllable, tone, 0);
         referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
+        hasUserRecording = false;
         resetUserRecording();
         visualizerView.setUserData(null);
         if (referenceSample != null) {
@@ -292,6 +297,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         if (spectrogramView != null) {
             spectrogramView.clear();
         }
+        updatePlayUserRecordingEnabled();
         synthesizeReferenceToFile();
     }
 
@@ -582,13 +588,21 @@ public class TonePracticeActivity extends AppCompatActivity {
         }, new PitchAnalyzer.SpectrumListener() {
             @Override
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
+                final float[] frameCopy = new float[magnitudes.length];
+                System.arraycopy(magnitudes, 0, frameCopy, 0, magnitudes.length);
+                synchronized (userSpectrogramFrames) {
+                    userSpectrogramFrames.add(frameCopy);
+                    if (userSpectrogramSampleRate == 0) {
+                        userSpectrogramSampleRate = sampleRate;
+                    }
+                }
                 if (spectrogramView == null) {
                     return;
                 }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        spectrogramView.addSpectrumFrame(magnitudes, sampleRate, magnitudes.length * 2);
+                        spectrogramView.addSpectrumFrame(frameCopy, sampleRate, frameCopy.length * 2);
                     }
                 });
             }
@@ -618,11 +632,17 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private void resetUserRecording() {
         stopUserPlayback();
+        userRecordingStateToken++;
+        hasUserRecording = false;
         deleteTempFile(userRecordingFile);
         userRecordingFile = null;
         userPcmStream = new ByteArrayOutputStream();
         userSampleRate = 0;
-        btnPlayUserRecording.setEnabled(false);
+        synchronized (userSpectrogramFrames) {
+            userSpectrogramFrames.clear();
+            userSpectrogramSampleRate = 0;
+        }
+        updatePlayUserRecordingEnabled();
     }
 
     private synchronized void appendUserPcm(short[] samples, int length, int sampleRate) {
@@ -660,7 +680,8 @@ public class TonePracticeActivity extends AppCompatActivity {
             return;
         }
         userRecordingFile = outputFile;
-        btnPlayUserRecording.setEnabled(true);
+        hasUserRecording = true;
+        updatePlayUserRecordingEnabled();
     }
 
     private boolean writeWavFile(File file, byte[] pcmData, int sampleRate) {
@@ -704,9 +725,12 @@ public class TonePracticeActivity extends AppCompatActivity {
     }
 
     private void playUserRecording() {
-        if (userRecordingFile == null || !userRecordingFile.exists()) {
+        if (!hasUserRecording || userRecordingFile == null || !userRecordingFile.exists()) {
             return;
         }
+        long expectedStateToken = userRecordingStateToken;
+        String expectedRecordingPath = userRecordingFile.getAbsolutePath();
+        renderSavedUserSpectrogram(expectedStateToken, expectedRecordingPath);
         stopUserPlayback();
         userPlayer = new MediaPlayer();
         try {
@@ -721,6 +745,44 @@ public class TonePracticeActivity extends AppCompatActivity {
             userPlayer.start();
         } catch (IOException e) {
             stopUserPlayback();
+        }
+    }
+
+
+    private void updatePlayUserRecordingEnabled() {
+        boolean enabled = hasUserRecording && userRecordingFile != null && userRecordingFile.exists();
+        btnPlayUserRecording.setEnabled(enabled);
+        btnPlayUserRecording.setAlpha(enabled ? 1f : 0.5f);
+    }
+
+    private void renderSavedUserSpectrogram(long expectedStateToken, String expectedRecordingPath) {
+        if (spectrogramView == null) {
+            return;
+        }
+        final List<float[]> frames = new ArrayList<>();
+        final int sampleRate;
+        synchronized (userSpectrogramFrames) {
+            for (float[] sourceFrame : userSpectrogramFrames) {
+                float[] copy = new float[sourceFrame.length];
+                System.arraycopy(sourceFrame, 0, copy, 0, sourceFrame.length);
+                frames.add(copy);
+            }
+            sampleRate = userSpectrogramSampleRate;
+        }
+        if (frames.isEmpty() || sampleRate == 0) {
+            return;
+        }
+        File currentRecording = userRecordingFile;
+        if (isRecording
+                || expectedStateToken != userRecordingStateToken
+                || currentRecording == null
+                || !currentRecording.exists()
+                || !currentRecording.getAbsolutePath().equals(expectedRecordingPath)) {
+            return;
+        }
+        spectrogramView.clear();
+        for (float[] frame : frames) {
+            spectrogramView.addSpectrumFrame(frame, sampleRate, frame.length * 2);
         }
     }
 

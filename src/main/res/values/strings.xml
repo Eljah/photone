@@ -55,4 +55,9 @@
     <string name="voice_gender_male">Male</string>
     <string name="voice_gender_female">Female</string>
     <string name="voice_selection_auto">Automatic</string>
+
+    <string name="btn_achievements">Achievements</string>
+    <string name="title_achievements">Achievements</string>
+    <string name="label_no_achievements">No discrimination achievements yet.</string>
+    <string name="label_achievement_item">Mode: %1$s\nCompared: %2$s\nBest score: %3$d</string>
 </resources>

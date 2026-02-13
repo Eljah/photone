@@ -52,6 +52,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/spinner_discrimination_final_consonant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1" />
         </LinearLayout>
 
         <Button
