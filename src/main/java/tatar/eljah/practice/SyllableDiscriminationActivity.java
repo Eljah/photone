@@ -419,6 +419,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         }
         hasAnswered = true;
         checkAnswerButton.setEnabled(false);
+        if (lastPairText != null && !lastPairText.isEmpty()) {
+            DiscriminationStatsStore.recordScore(this, mode, lastPairText, score);
+        }
         updateScore();
     }
 

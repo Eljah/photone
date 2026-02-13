@@ -55,4 +55,9 @@
     <string name="label_recognition_success">Erkannt: %1$s</string>
     <string name="label_recognition_failed">Spracherkennung fehlgeschlagen.</string>
     <string name="label_recognition_in_progress">Spracherkennung läuft…</string>
+
+    <string name="btn_achievements">Erfolge</string>
+    <string name="title_achievements">Erfolge</string>
+    <string name="label_no_achievements">Noch keine Erfolge im Unterscheidungsmodus.</string>
+    <string name="label_achievement_item">Modus: %1$s\nVerglichen: %2$s\nBestpunktzahl: %3$d</string>
 </resources>

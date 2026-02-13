@@ -55,4 +55,9 @@
     <string name="label_recognition_success">Reconhecido: %1$s</string>
     <string name="label_recognition_failed">Falha no reconhecimento.</string>
     <string name="label_recognition_in_progress">Reconhecendo a fala…</string>
+
+    <string name="btn_achievements">Conquistas</string>
+    <string name="title_achievements">Conquistas</string>
+    <string name="label_no_achievements">Ainda não há conquistas no modo de discriminação.</string>
+    <string name="label_achievement_item">Modo: %1$s\nComparado: %2$s\nPontuação máxima: %3$d</string>
 </resources>

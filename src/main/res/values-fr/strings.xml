@@ -55,4 +55,9 @@
     <string name="label_recognition_success">Reconnu : %1$s</string>
     <string name="label_recognition_failed">La reconnaissance a échoué.</string>
     <string name="label_recognition_in_progress">Reconnaissance vocale en cours…</string>
+
+    <string name="btn_achievements">Succès</string>
+    <string name="title_achievements">Succès</string>
+    <string name="label_no_achievements">Aucun succès pour le mode de discrimination pour le moment.</string>
+    <string name="label_achievement_item">Mode : %1$s\nComparé : %2$s\nScore max : %3$d</string>
 </resources>

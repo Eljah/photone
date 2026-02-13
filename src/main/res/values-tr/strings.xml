@@ -55,4 +55,9 @@
     <string name="label_recognition_success">Algılandı: %1$s</string>
     <string name="label_recognition_failed">Tanıma başarısız.</string>
     <string name="label_recognition_in_progress">Konuşma tanınıyor…</string>
+
+    <string name="btn_achievements">Başarılar</string>
+    <string name="title_achievements">Başarılar</string>
+    <string name="label_no_achievements">Ayırt etme modunda henüz başarı yok.</string>
+    <string name="label_achievement_item">Mod: %1$s\nKarşılaştırılan: %2$s\nEn yüksek puan: %3$d</string>
 </resources>

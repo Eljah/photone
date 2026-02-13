@@ -55,4 +55,9 @@
     <string name="voice_gender_female">Хатын-кыз</string>
     <string name="voice_selection_auto">Автоматик</string>
     <string name="label_recognition_in_progress">Сөйләм таныла…</string>
+
+    <string name="btn_achievements">Казанышлар</string>
+    <string name="title_achievements">Казанышлар</string>
+    <string name="label_no_achievements">Аеру режимында әлегә казанышлар юк.</string>
+    <string name="label_achievement_item">Режим: %1$s\nЧагыштырылды: %2$s\nИң югары исәп: %3$d</string>
 </resources>

@@ -750,7 +750,9 @@ public class TonePracticeActivity extends AppCompatActivity {
 
 
     private void updatePlayUserRecordingEnabled() {
-        btnPlayUserRecording.setEnabled(hasUserRecording && userRecordingFile != null && userRecordingFile.exists());
+        boolean enabled = hasUserRecording && userRecordingFile != null && userRecordingFile.exists();
+        btnPlayUserRecording.setEnabled(enabled);
+        btnPlayUserRecording.setAlpha(enabled ? 1f : 0.5f);
     }
 
     private void renderSavedUserSpectrogram(long expectedStateToken, String expectedRecordingPath) {

@@ -55,4 +55,9 @@
     <string name="label_recognition_success">認識結果: %1$s</string>
     <string name="label_recognition_failed">認識に失敗しました。</string>
     <string name="label_recognition_in_progress">音声を認識中…</string>
+
+    <string name="btn_achievements">実績</string>
+    <string name="title_achievements">実績</string>
+    <string name="label_no_achievements">識別モードの実績はまだありません。</string>
+    <string name="label_achievement_item">モード: %1$s\n比較: %2$s\n最高スコア: %3$d</string>
 </resources>

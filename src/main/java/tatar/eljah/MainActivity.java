@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         View soundModeButton = findViewById(R.id.btn_sound_mode);
         View toneModeButton = findViewById(R.id.btn_tone_mode);
         View voiceSettingsButton = findViewById(R.id.btn_voice_settings);
+        View achievementsButton = findViewById(R.id.btn_achievements);
 
         demoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, VoiceSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AchievementsActivity.class);
                 startActivity(intent);
             }
         });
