@@ -55,4 +55,9 @@
     <string name="voice_gender_male">Мужской</string>
     <string name="voice_gender_female">Женский</string>
     <string name="voice_selection_auto">Автоматически</string>
+
+    <string name="btn_achievements">Достижения</string>
+    <string name="title_achievements">Достижения</string>
+    <string name="label_no_achievements">Пока нет достижений в режиме различения.</string>
+    <string name="label_achievement_item">Режим: %1$s\nСравнивали: %2$s\nЛучший счёт: %3$d</string>
 </resources>

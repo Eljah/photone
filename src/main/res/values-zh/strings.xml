@@ -55,4 +55,9 @@
     <string name="label_recognition_success">识别结果：%1$s</string>
     <string name="label_recognition_failed">识别失败。</string>
     <string name="label_recognition_in_progress">正在识别语音…</string>
+
+    <string name="btn_achievements">成就</string>
+    <string name="title_achievements">成就</string>
+    <string name="label_no_achievements">辨别模式还没有成就。</string>
+    <string name="label_achievement_item">模式：%1$s\n比较内容：%2$s\n最高分：%3$d</string>
 </resources>

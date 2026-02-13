@@ -55,4 +55,9 @@
     <string name="label_recognition_success">تم التعرف على: %1$s</string>
     <string name="label_recognition_failed">فشل التعرف.</string>
     <string name="label_recognition_in_progress">جارٍ التعرف على الكلام…</string>
+
+    <string name="btn_achievements">الإنجازات</string>
+    <string name="title_achievements">الإنجازات</string>
+    <string name="label_no_achievements">لا توجد إنجازات حتى الآن في وضع التمييز.</string>
+    <string name="label_achievement_item">الوضع: %1$s\nتمت المقارنة: %2$s\nأعلى نتيجة: %3$d</string>
 </resources>

@@ -11,7 +11,7 @@
     <properties>
         <android.min.sdk>21</android.min.sdk>
         <android.compile.sdk>35</android.compile.sdk>
-        <android.version.code>6</android.version.code>
+        <android.version.code>8</android.version.code>
         <android.version.name>2.2</android.version.name>
         <android.build.tools>35.0.1</android.build.tools>
         <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
@@ -77,12 +77,12 @@
             <artifactId>appcompat-v7</artifactId>
             <version>${android.support.version}</version>
             <type>aar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.android.support</groupId>
-                    <artifactId>animated-vector-drawable</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>animated-vector-drawable</artifactId>
+            <version>${android.support.version}</version>
+            <type>aar</type>
         </dependency>
         <dependency>
             <groupId>com.android.support</groupId>

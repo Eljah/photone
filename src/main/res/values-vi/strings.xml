@@ -55,4 +55,9 @@
     <string name="label_recognition_success">Nhận dạng: %1$s</string>
     <string name="label_recognition_failed">Nhận dạng thất bại.</string>
     <string name="label_recognition_in_progress">Đang nhận dạng giọng nói…</string>
+
+    <string name="btn_achievements">Thành tích</string>
+    <string name="title_achievements">Thành tích</string>
+    <string name="label_no_achievements">Chưa có thành tích ở chế độ phân biệt.</string>
+    <string name="label_achievement_item">Chế độ: %1$s\nSo sánh: %2$s\nĐiểm cao nhất: %3$d</string>
 </resources>

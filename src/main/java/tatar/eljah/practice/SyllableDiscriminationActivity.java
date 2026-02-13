@@ -54,6 +54,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     private static final String[] VOWELS = {
             "a", "ă", "â", "e", "ê", "i", "o", "ô", "ơ", "u", "ư", "y"
     };
+    private static final String[] FINAL_CONSONANTS = {
+            "", "c", "ch", "m", "n", "ng", "nh", "p", "t"
+    };
     private static final String[] BASE_VOWELS = {"a", "e", "i", "o", "u"};
     private static final String[] TONES = {"ngang", "sắc", "huyền", "hỏi", "ngã", "nặng"};
     private static final Map<String, String[]> TONE_FORMS = new HashMap<>();
@@ -84,6 +87,7 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     private Spinner baseVowelSpinner;
     private Spinner toneSpinner;
     private Spinner vowelSpinner;
+    private Spinner finalConsonantSpinner;
     private Spinner firstChoiceSpinner;
     private Spinner secondChoiceSpinner;
     private TextView optionsView;
@@ -145,6 +149,7 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         baseVowelSpinner = findViewById(R.id.spinner_discrimination_base_vowel);
         toneSpinner = findViewById(R.id.spinner_discrimination_tone);
         vowelSpinner = findViewById(R.id.spinner_discrimination_vowel);
+        finalConsonantSpinner = findViewById(R.id.spinner_discrimination_final_consonant);
         firstChoiceSpinner = findViewById(R.id.spinner_discrimination_first);
         secondChoiceSpinner = findViewById(R.id.spinner_discrimination_second);
         optionsView = findViewById(R.id.tv_discrimination_options);
@@ -262,6 +267,11 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         vowelAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
         vowelSpinner.setAdapter(vowelAdapter);
 
+        ArrayAdapter<String> finalConsonantAdapter = new ArrayAdapter<>(this,
+                R.layout.spinner_item_dark, FINAL_CONSONANTS);
+        finalConsonantAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark);
+        finalConsonantSpinner.setAdapter(finalConsonantAdapter);
+
         baseVowelSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
@@ -335,6 +345,7 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
     private List<String> buildOptions() {
         List<String> options = new ArrayList<>();
         String consonant = String.valueOf(consonantSpinner.getSelectedItem());
+        String finalConsonant = String.valueOf(finalConsonantSpinner.getSelectedItem());
         if (MODE_SOUND.equals(mode)) {
             String baseVowel = String.valueOf(baseVowelSpinner.getSelectedItem());
             String tone = String.valueOf(toneSpinner.getSelectedItem());
@@ -346,16 +357,16 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
             int secondIndex = pickDifferentIndex(variants.length, firstIndex);
             String firstVowel = variants[firstIndex];
             String secondVowel = variants[secondIndex];
-            options.add(buildSyllable(consonant, firstVowel, tone));
-            options.add(buildSyllable(consonant, secondVowel, tone));
+            options.add(buildSyllable(consonant, firstVowel, tone, finalConsonant));
+            options.add(buildSyllable(consonant, secondVowel, tone, finalConsonant));
         } else {
             String vowel = String.valueOf(vowelSpinner.getSelectedItem());
             int firstToneIndex = random.nextInt(TONES.length);
             int secondToneIndex = pickDifferentIndex(TONES.length, firstToneIndex);
             String firstTone = TONES[firstToneIndex];
             String secondTone = TONES[secondToneIndex];
-            options.add(buildSyllable(consonant, vowel, firstTone));
-            options.add(buildSyllable(consonant, vowel, secondTone));
+            options.add(buildSyllable(consonant, vowel, firstTone, finalConsonant));
+            options.add(buildSyllable(consonant, vowel, secondTone, finalConsonant));
         }
         return options;
     }
@@ -368,9 +379,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         return secondIndex;
     }
 
-    private String buildSyllable(String consonant, String vowel, String tone) {
+    private String buildSyllable(String consonant, String vowel, String tone, String finalConsonant) {
         String tonedVowel = applyTone(vowel, tone);
-        return (consonant + tonedVowel).trim();
+        return (consonant + tonedVowel + finalConsonant).trim();
     }
 
     private String applyTone(String vowel, String toneLabel) {
@@ -408,6 +419,9 @@ public class SyllableDiscriminationActivity extends AppCompatActivity {
         }
         hasAnswered = true;
         checkAnswerButton.setEnabled(false);
+        if (lastPairText != null && !lastPairText.isEmpty()) {
+            DiscriminationStatsStore.recordScore(this, mode, lastPairText, score);
+        }
         updateScore();
     }
 
