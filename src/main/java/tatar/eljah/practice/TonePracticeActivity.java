@@ -118,6 +118,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     private ByteArrayOutputStream userPcmStream;
     private int userSampleRate;
     private MediaPlayer userPlayer;
+    private boolean hasUserRecording = false;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable stopRecordingRunnable = new Runnable() {
@@ -185,7 +186,7 @@ public class TonePracticeActivity extends AppCompatActivity {
             }
         });
 
-        btnPlayUserRecording.setEnabled(false);
+        updatePlayUserRecordingEnabled();
         btnPlayUserRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,6 +243,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         String tone = String.valueOf(practiceToneSpinner.getSelectedItem());
         targetSyllable = new VietnameseSyllable(syllable, tone, 0);
         referenceTitle.setText(getString(R.string.label_sample_selected, syllable));
+        hasUserRecording = false;
         resetUserRecording();
         visualizerView.setUserData(null);
         if (referenceSample != null) {
@@ -292,6 +294,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         if (spectrogramView != null) {
             spectrogramView.clear();
         }
+        updatePlayUserRecordingEnabled();
         synthesizeReferenceToFile();
     }
 
@@ -557,6 +560,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         shouldRecognizeSpeech = recognizeSpeech;
 
         userPitch.clear();
+        hasUserRecording = false;
         resetUserRecording();
         visualizerView.setUserData(userPitch);
         if (spectrogramView != null) {
@@ -622,7 +626,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         userRecordingFile = null;
         userPcmStream = new ByteArrayOutputStream();
         userSampleRate = 0;
-        btnPlayUserRecording.setEnabled(false);
+        updatePlayUserRecordingEnabled();
     }
 
     private synchronized void appendUserPcm(short[] samples, int length, int sampleRate) {
@@ -660,7 +664,8 @@ public class TonePracticeActivity extends AppCompatActivity {
             return;
         }
         userRecordingFile = outputFile;
-        btnPlayUserRecording.setEnabled(true);
+        hasUserRecording = true;
+        updatePlayUserRecordingEnabled();
     }
 
     private boolean writeWavFile(File file, byte[] pcmData, int sampleRate) {
@@ -704,9 +709,10 @@ public class TonePracticeActivity extends AppCompatActivity {
     }
 
     private void playUserRecording() {
-        if (userRecordingFile == null || !userRecordingFile.exists()) {
+        if (!hasUserRecording || userRecordingFile == null || !userRecordingFile.exists()) {
             return;
         }
+        renderUserSpectrogramFromRecording();
         stopUserPlayback();
         userPlayer = new MediaPlayer();
         try {
@@ -722,6 +728,53 @@ public class TonePracticeActivity extends AppCompatActivity {
         } catch (IOException e) {
             stopUserPlayback();
         }
+    }
+
+
+    private void updatePlayUserRecordingEnabled() {
+        btnPlayUserRecording.setEnabled(hasUserRecording && userRecordingFile != null && userRecordingFile.exists());
+    }
+
+    private void renderUserSpectrogramFromRecording() {
+        if (userRecordingFile == null || !userRecordingFile.exists()) {
+            return;
+        }
+        final File recordingFile = userRecordingFile;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final WavData wavData;
+                try {
+                    wavData = readWavFile(recordingFile);
+                } catch (IOException e) {
+                    return;
+                }
+                final List<float[]> spectrumFrames = new ArrayList<>();
+                pitchAnalyzer.analyzePcm(
+                        wavData.samples,
+                        wavData.sampleRate,
+                        null,
+                        new PitchAnalyzer.SpectrumListener() {
+                            @Override
+                            public void onSpectrum(float[] magnitudes, int sampleRate) {
+                                spectrumFrames.add(magnitudes);
+                            }
+                        }
+                );
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (spectrogramView == null) {
+                            return;
+                        }
+                        spectrogramView.clear();
+                        for (float[] frame : spectrumFrames) {
+                            spectrogramView.addSpectrumFrame(frame, wavData.sampleRate, frame.length * 2);
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     private void stopUserPlayback() {
