@@ -80,7 +80,7 @@ jobs:
           PY
 
       - name: Build APK (Maven)
-        run: PATH="${GITHUB_WORKSPACE}/scripts:${PATH}" mvn -U -Dexec.skip=true package
+        run: PATH="${GITHUB_WORKSPACE}/scripts:${PATH}" mvn -U -Dexec.skip=true -Dandroid.release=true package
 
       - name: Sign APK (release keystore)
         env:
@@ -92,6 +92,34 @@ jobs:
           ANDROID_PLATFORM: 35
           BUILD_TOOLS_AAPT2: 35.0.1
         run: bash scripts/build-aab.sh
+
+      - name: Verify release artifacts are not debuggable
+        env:
+          BUILD_TOOLS_VERSION: 35.0.1
+        run: |
+          AAPT="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/aapt"
+          if [[ ! -x "$AAPT" ]]; then
+            echo "aapt not found at $AAPT" >&2
+            exit 1
+          fi
+
+          APK=$(find target -maxdepth 1 -type f -name '*-signed.apk' | sort | tail -1)
+          if [[ -z "$APK" ]]; then
+            echo "No signed APK found in target/" >&2
+            exit 1
+          fi
+
+          if "$AAPT" dump badging "$APK" | grep -q 'application-debuggable'; then
+            echo "Signed APK is debuggable: $APK" >&2
+            exit 1
+          fi
+
+          if "$AAPT" dump badging target/universal.apk | grep -q 'application-debuggable'; then
+            echo "Universal APK is debuggable: target/universal.apk" >&2
+            exit 1
+          fi
+
+          echo "Release debuggable checks passed for signed APK and universal APK."
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
