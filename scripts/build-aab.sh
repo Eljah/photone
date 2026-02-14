@@ -28,12 +28,28 @@ if [[ ! -x "$AAPT2" ]]; then
   exit 1
 fi
 
-BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool.jar"
+JAVA_VERSION_RAW="$(java -version 2>&1 | head -n1)"
+JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E "s/.*version \"([0-9]+)(\\.[0-9]+)?.*/\\1/")"
+if [[ "$JAVA_MAJOR" == "1" ]]; then
+  JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E "s/.*version \"1\\.([0-9]+).*/\\1/")"
+fi
+
+if [[ -z "${BUNDLETOOL_VERSION:-}" ]]; then
+  if [[ "$JAVA_MAJOR" -ge 11 ]]; then
+    BUNDLETOOL_VERSION="1.16.0"
+  else
+    BUNDLETOOL_VERSION="1.15.6"
+  fi
+fi
+
+echo "Using Java major=$JAVA_MAJOR and bundletool=$BUNDLETOOL_VERSION"
+
+BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool-all-${BUNDLETOOL_VERSION}.jar"
 BUNDLE_CONFIG="$REPO_ROOT/scripts/bundle-config.json"
 if [[ ! -f "$BUNDLETOOL_JAR" ]]; then
   mkdir -p "$REPO_ROOT/tools"
   curl -sSL -o "$BUNDLETOOL_JAR" \
-    https://github.com/google/bundletool/releases/download/1.16.0/bundletool-all-1.16.0.jar
+    "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
 fi
 
 WORK_DIR=$(mktemp -d)
