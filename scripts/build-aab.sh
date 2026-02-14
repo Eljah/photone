@@ -7,7 +7,7 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
-APP_VERSION_CODE="${APP_VERSION_CODE:-8}"
+APP_VERSION_CODE="${APP_VERSION_CODE:-9}"
 APP_VERSION_NAME="${APP_VERSION_NAME:-2.2}"
 BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
@@ -28,11 +28,28 @@ if [[ ! -x "$AAPT2" ]]; then
   exit 1
 fi
 
-BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool.jar"
+JAVA_VERSION_RAW="$(java -version 2>&1 | head -n1)"
+JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/')"
+if [[ "$JAVA_MAJOR" == "1" ]]; then
+  JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E 's/.*version "1\.([0-9]+).*/\1/')"
+fi
+
+if [[ -z "${BUNDLETOOL_VERSION:-}" ]]; then
+  if [[ "$JAVA_MAJOR" -ge 11 ]]; then
+    BUNDLETOOL_VERSION="1.16.0"
+  else
+    BUNDLETOOL_VERSION="1.15.6"
+  fi
+fi
+
+echo "Using Java major=$JAVA_MAJOR and bundletool=$BUNDLETOOL_VERSION"
+
+BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+BUNDLE_CONFIG="$REPO_ROOT/scripts/bundle-config.json"
 if [[ ! -f "$BUNDLETOOL_JAR" ]]; then
   mkdir -p "$REPO_ROOT/tools"
   curl -sSL -o "$BUNDLETOOL_JAR" \
-    https://github.com/google/bundletool/releases/download/1.16.0/bundletool-all-1.16.0.jar
+    "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar"
 fi
 
 WORK_DIR=$(mktemp -d)
@@ -113,15 +130,76 @@ AAB_PATH="$REPO_ROOT/target/app-release-v${APP_VERSION_CODE}.aab"
 LATEST_AAB_PATH="$REPO_ROOT/target/app-release.aab"
 java -jar "$BUNDLETOOL_JAR" build-bundle \
   --modules="$MODULE_ZIP" \
+  --config="$BUNDLE_CONFIG" \
   --output="$AAB_PATH" \
   --overwrite
 
 cp "$AAB_PATH" "$LATEST_AAB_PATH"
+
+APKS_PATH="$WORK_DIR/app.apks"
+UNIVERSAL_APK="$WORK_DIR/universal.apk"
+
+java -jar "$BUNDLETOOL_JAR" build-apks \
+  --bundle="$AAB_PATH" \
+  --output="$APKS_PATH" \
+  --mode=universal \
+  --overwrite
+
+if unzip -Z1 "$APKS_PATH" | grep -q '^universal\.apk$'; then
+  unzip -q -o "$APKS_PATH" universal.apk -d "$WORK_DIR"
+
+  if unzip -l "$UNIVERSAL_APK" | grep -q 'AndroidManifest.xml'; then
+    echo "AAB smoke-check: universal.apk contains AndroidManifest.xml"
+  else
+    echo "AAB smoke-check warning: universal.apk does not list AndroidManifest.xml (continuing)" >&2
+  fi
+
+  if unzip -l "$UNIVERSAL_APK" | grep -q 'res/.*/abc_vector_test.xml'; then
+    echo "AAB smoke-check: found abc_vector_test.xml in generated universal.apk"
+  else
+    echo "AAB smoke-check warning: abc_vector_test.xml not found in generated universal.apk (continuing)" >&2
+  fi
+else
+  echo "AAB smoke-check warning: universal.apk entry not found in app.apks (continuing)" >&2
+fi
 
 jarsigner \
   -keystore "$KEYSTORE_PATH" \
   -storepass "$KEYSTORE_PASSWORD" \
   -keypass "$KEY_PASSWORD" \
   "$AAB_PATH" "$KEY_ALIAS"
+
+if [[ -z "${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION:-}" ]]; then
+  if [[ "$JAVA_MAJOR" -ge 11 ]]; then
+    UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION="1.18.3"
+  else
+    UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION="$BUNDLETOOL_VERSION"
+  fi
+fi
+
+UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool-all-${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}.jar"
+if [[ ! -f "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" ]]; then
+  mkdir -p "$REPO_ROOT/tools"
+  curl -sSL -o "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" \
+    "https://github.com/google/bundletool/releases/download/${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}/bundletool-all-${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}.jar"
+fi
+
+echo "Using universal APK bundletool=$UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION"
+
+UNIVERSAL_APKS_PATH="$REPO_ROOT/target/app_universal.apks"
+UNIVERSAL_ARTIFACT_APK_PATH="$REPO_ROOT/target/universal.apk"
+java -jar "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" build-apks \
+  --bundle="$AAB_PATH" \
+  --output="$UNIVERSAL_APKS_PATH" \
+  --mode=universal \
+  --overwrite
+
+unzip -q -o "$UNIVERSAL_APKS_PATH" universal.apk -d "$REPO_ROOT/target"
+rm -f "$UNIVERSAL_APKS_PATH"
+
+if [[ ! -f "$UNIVERSAL_ARTIFACT_APK_PATH" ]]; then
+  echo "Failed to produce universal.apk in target directory" >&2
+  exit 1
+fi
 
 rm -rf "$WORK_DIR"
