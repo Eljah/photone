@@ -11,14 +11,18 @@
     <properties>
         <android.min.sdk>21</android.min.sdk>
         <android.compile.sdk>35</android.compile.sdk>
-        <android.version.code>9</android.version.code>
+        <android.version.code>10</android.version.code>
         <android.version.name>2.2</android.version.name>
         <android.build.tools>35.0.1</android.build.tools>
         <android.sdk.home>/usr/local/lib/android/sdk</android.sdk.home>
         <android.sdk.path>${android.sdk.home}</android.sdk.path>
         <aab.skip>false</aab.skip>
         <java.version>1.8</java.version>
-        <android.support.version>28.0.0</android.support.version>
+        <androidx.appcompat.version>1.3.1</androidx.appcompat.version>
+        <androidx.recyclerview.version>1.2.1</androidx.recyclerview.version>
+        <androidx.annotation.version>1.2.0</androidx.annotation.version>
+        <androidx.vectordrawable.version>1.1.0</androidx.vectordrawable.version>
+        <androidx.core.version>1.6.0</androidx.core.version>
         <android.maven.plugin.version>4.6.0</android.maven.plugin.version>
     </properties>
 
@@ -45,21 +49,27 @@
                 <version>1.1.1</version>
             </dependency>
             <dependency>
-                <groupId>com.android.support</groupId>
-                <artifactId>appcompat-v7</artifactId>
-                <version>${android.support.version}</version>
+                <groupId>androidx.appcompat</groupId>
+                <artifactId>appcompat</artifactId>
+                <version>${androidx.appcompat.version}</version>
                 <type>aar</type>
             </dependency>
             <dependency>
-                <groupId>com.android.support</groupId>
-                <artifactId>recyclerview-v7</artifactId>
-                <version>${android.support.version}</version>
+                <groupId>androidx.recyclerview</groupId>
+                <artifactId>recyclerview</artifactId>
+                <version>${androidx.recyclerview.version}</version>
                 <type>aar</type>
             </dependency>
             <dependency>
-                <groupId>com.android.support</groupId>
-                <artifactId>support-annotations</artifactId>
-                <version>${android.support.version}</version>
+                <groupId>androidx.annotation</groupId>
+                <artifactId>annotation</artifactId>
+                <version>${androidx.annotation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>androidx.core</groupId>
+                <artifactId>core</artifactId>
+                <version>${androidx.core.version}</version>
+                <type>aar</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -73,27 +83,33 @@
             <systemPath>${android.sdk.home}/platforms/android-${android.compile.sdk}/android.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.android.support</groupId>
-            <artifactId>appcompat-v7</artifactId>
-            <version>${android.support.version}</version>
+            <groupId>androidx.appcompat</groupId>
+            <artifactId>appcompat</artifactId>
+            <version>${androidx.appcompat.version}</version>
             <type>aar</type>
         </dependency>
         <dependency>
-            <groupId>com.android.support</groupId>
-            <artifactId>animated-vector-drawable</artifactId>
-            <version>${android.support.version}</version>
+            <groupId>androidx.vectordrawable</groupId>
+            <artifactId>vectordrawable-animated</artifactId>
+            <version>${androidx.vectordrawable.version}</version>
             <type>aar</type>
         </dependency>
         <dependency>
-            <groupId>com.android.support</groupId>
-            <artifactId>recyclerview-v7</artifactId>
-            <version>${android.support.version}</version>
+            <groupId>androidx.recyclerview</groupId>
+            <artifactId>recyclerview</artifactId>
+            <version>${androidx.recyclerview.version}</version>
             <type>aar</type>
         </dependency>
         <dependency>
-            <groupId>com.android.support</groupId>
-            <artifactId>support-annotations</artifactId>
-            <version>${android.support.version}</version>
+            <groupId>androidx.annotation</groupId>
+            <artifactId>annotation</artifactId>
+            <version>${androidx.annotation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>androidx.core</groupId>
+            <artifactId>core</artifactId>
+            <version>${androidx.core.version}</version>
+            <type>aar</type>
         </dependency>
     </dependencies>
 
