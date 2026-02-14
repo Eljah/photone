@@ -7,7 +7,7 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
-APP_VERSION_CODE="${APP_VERSION_CODE:-9}"
+APP_VERSION_CODE="${APP_VERSION_CODE:-10}"
 APP_VERSION_NAME="${APP_VERSION_NAME:-2.2}"
 BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
@@ -53,71 +53,55 @@ if [[ ! -f "$BUNDLETOOL_JAR" ]]; then
 fi
 
 WORK_DIR=$(mktemp -d)
-COMPILED_RES_DIR="$WORK_DIR/compiled-res"
-AAR_DEPS_DIR="$WORK_DIR/aar-deps"
-AAR_UNPACK_DIR="$WORK_DIR/aar-unpacked"
-BASE_APK="$WORK_DIR/base.apk"
 MODULE_ZIP="$WORK_DIR/base.zip"
-MANIFEST_TEMPLATE="$REPO_ROOT/src/main/AndroidManifest.xml"
-MANIFEST_PATH="$WORK_DIR/AndroidManifest.xml"
+BASE_PROTO_APK="$WORK_DIR/base_proto.apk"
 
-cp "$MANIFEST_TEMPLATE" "$MANIFEST_PATH"
-sed -i -E 's/android:versionCode="[0-9]+"/android:versionCode="'"$APP_VERSION_CODE"'"/' "$MANIFEST_PATH"
-sed -i -E 's/android:versionName="[^"]+"/android:versionName="'"$APP_VERSION_NAME"'"/' "$MANIFEST_PATH"
+mapfile -t APK_CANDIDATES < <(find "$REPO_ROOT/target" -maxdepth 1 -type f -name '*.apk' \
+  ! -name 'universal.apk' ! -name '*unaligned*.apk')
+
+if [[ ${#APK_CANDIDATES[@]} -eq 0 ]]; then
+  echo "No base APK found in $REPO_ROOT/target. Build APK first (mvn package)." >&2
+  exit 1
+fi
+
+WORKING_APK="$(find "$REPO_ROOT/target" -maxdepth 1 -type f -name '*.apk' \
+  ! -name 'universal.apk' ! -name '*unaligned*.apk' -printf '%T@ %p\n' \
+  | sort -n | tail -1 | cut -d' ' -f2-)"
+
+if [[ -z "$WORKING_APK" || ! -f "$WORKING_APK" ]]; then
+  echo "Failed to pick base APK from $REPO_ROOT/target." >&2
+  exit 1
+fi
+
+echo "Using base APK for AAB conversion: $WORKING_APK"
 
 echo "Building AAB with versionCode=$APP_VERSION_CODE versionName=$APP_VERSION_NAME targetSdk=$ANDROID_PLATFORM"
 
-mkdir -p "$COMPILED_RES_DIR"
-RES_DIRS=("$REPO_ROOT/src/main/res")
-if [[ -d "$REPO_ROOT/target/unpacked-libs" ]]; then
-  while IFS= read -r -d '' lib_res; do
-    RES_DIRS+=("$lib_res")
-  done < <(find "$REPO_ROOT/target/unpacked-libs" -type d -name res -print0)
+# Keep resource IDs stable by converting an already-built APK to proto format.
+"$AAPT2" convert --output-format proto -o "$BASE_PROTO_APK" "$WORKING_APK"
+
+unzip -q "$BASE_PROTO_APK" -d "$WORK_DIR/apk"
+mkdir -p "$WORK_DIR/module/manifest" "$WORK_DIR/module/dex" "$WORK_DIR/module/res"
+
+if [[ ! -f "$WORK_DIR/apk/AndroidManifest.xml" || ! -f "$WORK_DIR/apk/resources.pb" ]]; then
+  echo "Converted proto APK is missing AndroidManifest.xml or resources.pb" >&2
+  exit 1
 fi
 
-mkdir -p "$AAR_DEPS_DIR" "$AAR_UNPACK_DIR"
-mvn -q -f "$REPO_ROOT/pom.xml" dependency:copy-dependencies \
-  -DincludeTypes=aar \
-  -DoutputDirectory="$AAR_DEPS_DIR" \
-  >/dev/null
-
-while IFS= read -r -d '' aar_file; do
-  aar_name="$(basename "$aar_file" .aar)"
-  unpack_dir="$AAR_UNPACK_DIR/$aar_name"
-  mkdir -p "$unpack_dir"
-  unzip -q -o "$aar_file" -d "$unpack_dir"
-  if [[ -d "$unpack_dir/res" ]]; then
-    RES_DIRS+=("$unpack_dir/res")
-  fi
-done < <(find "$AAR_DEPS_DIR" -type f -name '*.aar' -print0)
-
-COMPILED_ARGS=()
-index=0
-for res_dir in "${RES_DIRS[@]}"; do
-  if [[ -d "$res_dir" ]]; then
-    compiled_zip="$COMPILED_RES_DIR/res-$index.zip"
-    "$AAPT2" compile --dir "$res_dir" -o "$compiled_zip"
-    COMPILED_ARGS+=("-R" "$compiled_zip")
-    index=$((index + 1))
-  fi
-done
-
-"$AAPT2" link --proto-format \
-  -I "$ANDROID_HOME/platforms/android-$ANDROID_PLATFORM/android.jar" \
-  --manifest "$MANIFEST_PATH" \
-  --auto-add-overlay \
-  -o "$BASE_APK" \
-  "${COMPILED_ARGS[@]}"
-
-unzip -q "$BASE_APK" -d "$WORK_DIR/apk"
-mkdir -p "$WORK_DIR/module/manifest" "$WORK_DIR/module/dex" "$WORK_DIR/module/res"
 cp "$WORK_DIR/apk/AndroidManifest.xml" "$WORK_DIR/module/manifest/AndroidManifest.xml"
 cp "$WORK_DIR/apk/resources.pb" "$WORK_DIR/module/resources.pb"
+
 if [[ -d "$WORK_DIR/apk/res" ]]; then
   cp -R "$WORK_DIR/apk/res/"* "$WORK_DIR/module/res/"
 fi
-if compgen -G "$REPO_ROOT/target/classes*.dex" > /dev/null; then
+
+if compgen -G "$WORK_DIR/apk/*.dex" > /dev/null; then
+  cp "$WORK_DIR/apk"/*.dex "$WORK_DIR/module/dex/"
+elif compgen -G "$REPO_ROOT/target/classes*.dex" > /dev/null; then
   cp "$REPO_ROOT/target"/classes*.dex "$WORK_DIR/module/dex/"
+else
+  echo "No dex files found in converted APK or target/classes*.dex" >&2
+  exit 1
 fi
 
 (
