@@ -29,9 +29,9 @@ if [[ ! -x "$AAPT2" ]]; then
 fi
 
 JAVA_VERSION_RAW="$(java -version 2>&1 | head -n1)"
-JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E "s/.*version \"([0-9]+)(\\.[0-9]+)?.*/\\1/")"
+JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E 's/.*version "([0-9]+)(\.[0-9]+)?.*/\1/')"
 if [[ "$JAVA_MAJOR" == "1" ]]; then
-  JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E "s/.*version \"1\\.([0-9]+).*/\\1/")"
+  JAVA_MAJOR="$(echo "$JAVA_VERSION_RAW" | sed -E 's/.*version "1\.([0-9]+).*/\1/')"
 fi
 
 if [[ -z "${BUNDLETOOL_VERSION:-}" ]]; then
@@ -168,5 +168,29 @@ jarsigner \
   -storepass "$KEYSTORE_PASSWORD" \
   -keypass "$KEY_PASSWORD" \
   "$AAB_PATH" "$KEY_ALIAS"
+
+UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION="${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION:-1.18.3}"
+UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool-all-${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}.jar"
+if [[ ! -f "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" ]]; then
+  mkdir -p "$REPO_ROOT/tools"
+  curl -sSL -o "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" \
+    "https://github.com/google/bundletool/releases/download/${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}/bundletool-all-${UNIVERSAL_ARTIFACT_BUNDLETOOL_VERSION}.jar"
+fi
+
+UNIVERSAL_APKS_PATH="$REPO_ROOT/target/app_universal.apks"
+UNIVERSAL_ARTIFACT_APK_PATH="$REPO_ROOT/target/universal.apk"
+java -jar "$UNIVERSAL_ARTIFACT_BUNDLETOOL_JAR" build-apks \
+  --bundle="$AAB_PATH" \
+  --output="$UNIVERSAL_APKS_PATH" \
+  --mode=universal \
+  --overwrite
+
+unzip -q -o "$UNIVERSAL_APKS_PATH" universal.apk -d "$REPO_ROOT/target"
+rm -f "$UNIVERSAL_APKS_PATH"
+
+if [[ ! -f "$UNIVERSAL_ARTIFACT_APK_PATH" ]]; then
+  echo "Failed to produce universal.apk in target directory" >&2
+  exit 1
+fi
 
 rm -rf "$WORK_DIR"

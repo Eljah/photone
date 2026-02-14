@@ -103,6 +103,13 @@ jobs:
           name: vietnamese-tone-trainer-aab
           path: target/*.aab
 
+
+      - name: Upload universal APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vietnamese-tone-trainer-universal-apk
+          path: target/universal.apk
+
       - name: Cleanup old APK/AAB artifacts
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false)
         uses: actions/github-script@v7
@@ -111,6 +118,7 @@ jobs:
             const artifactNames = [
               "vietnamese-tone-trainer-apk",
               "vietnamese-tone-trainer-aab",
+              "vietnamese-tone-trainer-universal-apk",
             ];
             const { owner, repo } = context.repo;
             const artifacts = await github.paginate(
