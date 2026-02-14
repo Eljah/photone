@@ -66,6 +66,8 @@ jobs:
           major, _minor, suffix = match.groups()
           new_version = f"{major}.{run_number}{suffix}"
           pom_text = pom_text[:match.start()] + f"<version>{new_version}</version>" + pom_text[match.end():]
+          pom_text = re.sub(r"<android.version.code>\d+</android.version.code>", f"<android.version.code>{run_number}</android.version.code>", pom_text)
+          pom_text = re.sub(r"<android.version.name>[^<]+</android.version.name>", f"<android.version.name>{new_version}</android.version.name>", pom_text)
           pom_path.write_text(pom_text)
 
           manifest_path = pathlib.Path("src/main/AndroidManifest.xml")

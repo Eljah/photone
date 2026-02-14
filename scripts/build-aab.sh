@@ -57,14 +57,22 @@ MODULE_ZIP="$WORK_DIR/base.zip"
 BASE_PROTO_APK="$WORK_DIR/base_proto.apk"
 
 mapfile -t APK_CANDIDATES < <(find "$REPO_ROOT/target" -maxdepth 1 -type f -name '*.apk' \
-  ! -name 'universal.apk' ! -name '*unaligned*.apk' | sort)
+  ! -name 'universal.apk' ! -name '*unaligned*.apk')
 
 if [[ ${#APK_CANDIDATES[@]} -eq 0 ]]; then
   echo "No base APK found in $REPO_ROOT/target. Build APK first (mvn package)." >&2
   exit 1
 fi
 
-WORKING_APK="${APK_CANDIDATES[-1]}"
+WORKING_APK="$(find "$REPO_ROOT/target" -maxdepth 1 -type f -name '*.apk' \
+  ! -name 'universal.apk' ! -name '*unaligned*.apk' -printf '%T@ %p\n' \
+  | sort -n | tail -1 | cut -d' ' -f2-)"
+
+if [[ -z "$WORKING_APK" || ! -f "$WORKING_APK" ]]; then
+  echo "Failed to pick base APK from $REPO_ROOT/target." >&2
+  exit 1
+fi
+
 echo "Using base APK for AAB conversion: $WORKING_APK"
 
 echo "Building AAB with versionCode=$APP_VERSION_CODE versionName=$APP_VERSION_NAME targetSdk=$ANDROID_PLATFORM"
