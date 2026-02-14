@@ -1,0 +1,20 @@
+{
+  "optimizations": {
+    "splitsConfig": {
+      "splitDimension": [
+        {
+          "value": "ABI",
+          "negate": true
+        },
+        {
+          "value": "SCREEN_DENSITY",
+          "negate": true
+        },
+        {
+          "value": "LANGUAGE",
+          "negate": true
+        }
+      ]
+    }
+  }
+}

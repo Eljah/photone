@@ -7,7 +7,7 @@ KEY_ALIAS="${KEY_ALIAS:-release}"
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD:-Tatarstan1920}"
 KEY_PASSWORD="${KEY_PASSWORD:-Tatarstan1920}"
 ANDROID_PLATFORM="${ANDROID_PLATFORM:-35}"
-APP_VERSION_CODE="${APP_VERSION_CODE:-8}"
+APP_VERSION_CODE="${APP_VERSION_CODE:-9}"
 APP_VERSION_NAME="${APP_VERSION_NAME:-2.2}"
 BUILD_TOOLS_AAPT2="${BUILD_TOOLS_AAPT2:-35.0.1}"
 
@@ -29,6 +29,7 @@ if [[ ! -x "$AAPT2" ]]; then
 fi
 
 BUNDLETOOL_JAR="$REPO_ROOT/tools/bundletool.jar"
+BUNDLE_CONFIG="$REPO_ROOT/scripts/bundle-config.json"
 if [[ ! -f "$BUNDLETOOL_JAR" ]]; then
   mkdir -p "$REPO_ROOT/tools"
   curl -sSL -o "$BUNDLETOOL_JAR" \
@@ -113,10 +114,26 @@ AAB_PATH="$REPO_ROOT/target/app-release-v${APP_VERSION_CODE}.aab"
 LATEST_AAB_PATH="$REPO_ROOT/target/app-release.aab"
 java -jar "$BUNDLETOOL_JAR" build-bundle \
   --modules="$MODULE_ZIP" \
+  --config="$BUNDLE_CONFIG" \
   --output="$AAB_PATH" \
   --overwrite
 
 cp "$AAB_PATH" "$LATEST_AAB_PATH"
+
+APKS_PATH="$WORK_DIR/app.apks"
+UNIVERSAL_APK="$WORK_DIR/universal.apk"
+
+java -jar "$BUNDLETOOL_JAR" build-apks \
+  --bundle="$AAB_PATH" \
+  --output="$APKS_PATH" \
+  --mode=universal \
+  --overwrite
+
+unzip -q -o "$APKS_PATH" universal.apk -d "$WORK_DIR"
+if ! unzip -l "$UNIVERSAL_APK" | grep -q 'res/drawable/abc_vector_test.xml'; then
+  echo "AAB smoke-check failed: abc_vector_test.xml was not found in generated universal.apk" >&2
+  exit 1
+fi
 
 jarsigner \
   -keystore "$KEYSTORE_PATH" \
