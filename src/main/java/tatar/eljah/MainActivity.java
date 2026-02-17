@@ -10,6 +10,7 @@ import tatar.eljah.demo.ToneDemoActivity;
 import tatar.eljah.practice.SyllableDiscriminationActivity;
 import tatar.eljah.practice.TonePracticeActivity;
 import tatar.eljah.settings.LocaleManager;
+import tatar.eljah.settings.NoiseSettingsActivity;
 import tatar.eljah.settings.VoiceSettingsActivity;
 import tatar.eljah.R;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         View soundModeButton = findViewById(R.id.btn_sound_mode);
         View toneModeButton = findViewById(R.id.btn_tone_mode);
         View voiceSettingsButton = findViewById(R.id.btn_voice_settings);
+        View noiseSettingsButton = findViewById(R.id.btn_noise_settings);
         View achievementsButton = findViewById(R.id.btn_achievements);
 
         demoButton.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +74,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, VoiceSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        noiseSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NoiseSettingsActivity.class);
                 startActivity(intent);
             }
         });

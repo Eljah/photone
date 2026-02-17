@@ -60,4 +60,12 @@
     <string name="title_achievements">Achievements</string>
     <string name="label_no_achievements">No discrimination achievements yet.</string>
     <string name="label_achievement_item">Mode: %1$s\nCompared: %2$s\nBest score: %3$d</string>
+
+    <string name="btn_noise_settings">Noise settings</string>
+    <string name="title_noise_settings">Noise settings</string>
+    <string name="noise_level_value_format">Noise/voice level: %1$s</string>
+    <string name="noise_level_default">Noise/voice level: 0.20</string>
+    <string name="noise_level_input_hint">Enter level (0.00-1.00)</string>
+    <string name="noise_tap_hint">Tap the intensity graph to set the level where voice rises above noise.</string>
+
 </resources>

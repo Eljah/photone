@@ -60,4 +60,12 @@
     <string name="title_achievements">Достижения</string>
     <string name="label_no_achievements">Пока нет достижений в режиме различения.</string>
     <string name="label_achievement_item">Режим: %1$s\nСравнивали: %2$s\nЛучший счёт: %3$d</string>
+
+    <string name="btn_noise_settings">Настройки шума</string>
+    <string name="title_noise_settings">Настройки шума</string>
+    <string name="noise_level_value_format">Уровень шум/голос: %1$s</string>
+    <string name="noise_level_default">Уровень шум/голос: 0.20</string>
+    <string name="noise_level_input_hint">Введите уровень (0.00-1.00)</string>
+    <string name="noise_tap_hint">Тапни на графике интенсивности, чтобы задать уровень, при котором сигнал голоса выше шумов.</string>
+
 </resources>
