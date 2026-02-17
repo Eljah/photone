@@ -111,6 +111,7 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private PitchAnalyzer pitchAnalyzer;
     private float noiseThreshold;
+    private volatile float currentInputIntensity;
     private final List<Float> userPitch = new ArrayList<>();
     private boolean isRecording = false;
     private boolean shouldRecognizeSpeech = false;
@@ -576,10 +577,14 @@ public class TonePracticeActivity extends AppCompatActivity {
             tvDiff.setText("");
         }
         tvToneResult.setText("");
+        currentInputIntensity = 0f;
 
         pitchAnalyzer.startRealtimePitch(new PitchAnalyzer.PitchListener() {
             @Override
             public void onPitch(float pitchHz) {
+                if (currentInputIntensity < noiseThreshold) {
+                    return;
+                }
                 userPitch.add(pitchHz);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -593,8 +598,7 @@ public class TonePracticeActivity extends AppCompatActivity {
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
                 final float[] frameCopy = new float[magnitudes.length];
                 System.arraycopy(magnitudes, 0, frameCopy, 0, magnitudes.length);
-                float normalizedIntensity = computeNormalizedSpectrumIntensity(frameCopy);
-                if (normalizedIntensity < noiseThreshold) {
+                if (currentInputIntensity < noiseThreshold) {
                     for (int i = 0; i < frameCopy.length; i++) {
                         frameCopy[i] = 0f;
                     }
@@ -618,6 +622,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         }, new PitchAnalyzer.AudioListener() {
             @Override
             public void onAudio(short[] samples, int length, int sampleRate) {
+                currentInputIntensity = computeNormalizedAudioIntensity(samples, length);
                 appendUserPcm(samples, length, sampleRate);
             }
         });
@@ -628,14 +633,18 @@ public class TonePracticeActivity extends AppCompatActivity {
         handler.postDelayed(stopRecordingRunnable, recordingDurationMs);
     }
 
-    private float computeNormalizedSpectrumIntensity(float[] magnitudes) {
-        float max = 0f;
-        for (float value : magnitudes) {
-            if (value > max) {
-                max = value;
-            }
+
+    private float computeNormalizedAudioIntensity(short[] samples, int length) {
+        if (samples == null || length <= 0) {
+            return 0f;
         }
-        return Math.min(1f, max / 6000f);
+        double sumSquares = 0d;
+        for (int i = 0; i < length; i++) {
+            double normalized = samples[i] / 32768d;
+            sumSquares += normalized * normalized;
+        }
+        double rms = Math.sqrt(sumSquares / length);
+        return (float) Math.min(1d, rms * 8d);
     }
 
     private void stopRecordingAndAnalyze(boolean recognizeSpeech) {
