@@ -3,8 +3,8 @@ package tatar.eljah.settings;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,6 +34,8 @@ public class NoiseSettingsActivity extends AppCompatActivity {
     private PitchAnalyzer pitchAnalyzer;
     private float noiseThreshold;
     private boolean isUpdatingUi;
+    private boolean hasRecordPermission;
+    private boolean isMonitoring;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -81,28 +83,25 @@ public class NoiseSettingsActivity extends AppCompatActivity {
             }
         });
 
-        levelInput.addTextChangedListener(new TextWatcher() {
+        levelInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (isUpdatingUi) {
-                    return;
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || actionId == EditorInfo.IME_ACTION_GO
+                        || actionId == EditorInfo.IME_ACTION_NEXT
+                        || actionId == EditorInfo.IME_ACTION_SEND) {
+                    commitThresholdFromInput();
+                    return true;
                 }
-                String raw = editable.toString().trim();
-                if (raw.isEmpty()) {
-                    return;
-                }
-                try {
-                    float parsed = Float.parseFloat(raw.replace(',', '.'));
-                    updateThreshold(NoiseSettingsStore.clamp(parsed), true);
-                } catch (NumberFormatException ignored) {
+                return false;
+            }
+        });
+
+        levelInput.setOnFocusChangeListener(new TextView.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(android.view.View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    commitThresholdFromInput();
                 }
             }
         });
@@ -112,19 +111,33 @@ public class NoiseSettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        if (pitchAnalyzer != null) {
-            pitchAnalyzer.stop();
+    protected void onStart() {
+        super.onStart();
+        if (hasRecordPermission) {
+            startMonitoring();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        stopMonitoring();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopMonitoring();
         super.onDestroy();
     }
 
     private void ensurePermissionAndStart() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
+            hasRecordPermission = true;
             startMonitoring();
             return;
         }
+        hasRecordPermission = false;
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.RECORD_AUDIO},
                 REQUEST_RECORD_AUDIO);
@@ -136,13 +149,19 @@ public class NoiseSettingsActivity extends AppCompatActivity {
         if (requestCode != REQUEST_RECORD_AUDIO) {
             return;
         }
-        boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-        if (granted) {
+        hasRecordPermission = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        if (hasRecordPermission) {
             startMonitoring();
+        } else {
+            stopMonitoring();
         }
     }
 
     private void startMonitoring() {
+        if (isMonitoring || pitchAnalyzer == null) {
+            return;
+        }
+        isMonitoring = true;
         pitchAnalyzer.startRealtimePitch(null, new PitchAnalyzer.SpectrumListener() {
             @Override
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
@@ -166,6 +185,14 @@ public class NoiseSettingsActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void stopMonitoring() {
+        if (!isMonitoring || pitchAnalyzer == null) {
+            return;
+        }
+        pitchAnalyzer.stop();
+        isMonitoring = false;
     }
 
     private float[] applyNoiseGate(float[] magnitudes) {
@@ -203,10 +230,29 @@ public class NoiseSettingsActivity extends AppCompatActivity {
         isUpdatingUi = true;
         String text = String.format(Locale.US, "%.2f", noiseThreshold);
         levelText.setText(getString(R.string.noise_level_value_format, text));
-        levelInput.setText(text);
-        levelInput.setSelection(levelInput.getText().length());
+        if (!levelInput.hasFocus()) {
+            levelInput.setText(text);
+            levelInput.setSelection(levelInput.getText().length());
+        }
         thresholdSeek.setProgress(Math.round(noiseThreshold * SEEKBAR_MAX));
         intensityGraph.setThreshold(noiseThreshold);
         isUpdatingUi = false;
+    }
+
+    private void commitThresholdFromInput() {
+        if (isUpdatingUi) {
+            return;
+        }
+        String raw = levelInput.getText().toString().trim();
+        if (raw.isEmpty()) {
+            updateThreshold(noiseThreshold, false);
+            return;
+        }
+        try {
+            float parsed = Float.parseFloat(raw.replace(',', '.'));
+            updateThreshold(NoiseSettingsStore.clamp(parsed), true);
+        } catch (NumberFormatException ignored) {
+            updateThreshold(noiseThreshold, false);
+        }
     }
 }
