@@ -33,6 +33,7 @@ public class NoiseSettingsActivity extends AppCompatActivity {
 
     private PitchAnalyzer pitchAnalyzer;
     private float noiseThreshold;
+    private volatile float currentIntensity;
     private boolean isUpdatingUi;
     private boolean hasRecordPermission;
     private boolean isMonitoring;
@@ -162,6 +163,7 @@ public class NoiseSettingsActivity extends AppCompatActivity {
             return;
         }
         isMonitoring = true;
+        currentIntensity = 0f;
         pitchAnalyzer.startRealtimePitch(null, new PitchAnalyzer.SpectrumListener() {
             @Override
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
@@ -177,6 +179,7 @@ public class NoiseSettingsActivity extends AppCompatActivity {
             @Override
             public void onAudio(short[] samples, int length, int sampleRate) {
                 final float intensity = computeIntensity(samples, length);
+                currentIntensity = intensity;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -196,14 +199,7 @@ public class NoiseSettingsActivity extends AppCompatActivity {
     }
 
     private float[] applyNoiseGate(float[] magnitudes) {
-        float max = 0f;
-        for (float value : magnitudes) {
-            if (value > max) {
-                max = value;
-            }
-        }
-        float normalized = Math.min(1f, max / 6000f);
-        if (normalized >= noiseThreshold) {
+        if (currentIntensity >= noiseThreshold) {
             return magnitudes;
         }
         return new float[magnitudes.length];

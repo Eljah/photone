@@ -69,18 +69,18 @@ public class PitchAnalyzer {
                     while (running) {
                         int read = record.read(buffer, 0, buffer.length);
                         if (read > 0) {
-                            float pitch = estimatePitch(buffer, read, sampleRate);
-                            if (pitch > 0f && listener != null) {
-                                listener.onPitch(pitch);
+                            if (audioListener != null) {
+                                short[] samples = new short[read];
+                                System.arraycopy(buffer, 0, samples, 0, read);
+                                audioListener.onAudio(samples, read, sampleRate);
                             }
                             if (spectrumListener != null) {
                                 float[] magnitudes = computeSpectrum(buffer, read);
                                 spectrumListener.onSpectrum(magnitudes, sampleRate);
                             }
-                            if (audioListener != null) {
-                                short[] samples = new short[read];
-                                System.arraycopy(buffer, 0, samples, 0, read);
-                                audioListener.onAudio(samples, read, sampleRate);
+                            float pitch = estimatePitch(buffer, read, sampleRate);
+                            if (pitch > 0f && listener != null) {
+                                listener.onPitch(pitch);
                             }
                         }
                     }
