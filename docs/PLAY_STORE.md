@@ -52,3 +52,21 @@ These are outside the build system but required to publish:
 3. **Modern SDK targeting** (`minSdkVersion`, `targetSdkVersion`).
 4. **Unique package name** (not `com.example`).
 5. Store listing + policy assets.
+
+
+## 7) Advertising ID declaration (Android 13+ requirement)
+Google Play Console asks whether your app uses the Advertising ID for apps targeting Android 13+.
+
+**How it works**
+- This is configured in two places:
+  1. **Play Console form**: Policy -> App content -> Advertising ID declaration.
+  2. **App manifest**: `com.google.android.gms.permission.AD_ID` permission.
+
+**What this project should do**
+- The app does **not** use ads or Advertising ID.
+- In Play Console, choose **"No, app does not use Advertising ID"**.
+- In code, ensure AD_ID permission is not present in merged manifest (we enforce this with `tools:node="remove"`).
+
+**Where changed in repo**
+- `src/main/AndroidManifest.xml`: added `xmlns:tools` and explicit removal of AD_ID permission.
+

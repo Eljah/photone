@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/brand_black">
+
+    <TextView
+        android:id="@+id/tv_noise_level_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/brand_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/noise_level_default" />
+
+    <SeekBar
+        android:id="@+id/seek_noise_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+    <EditText
+        android:id="@+id/et_noise_level_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/noise_level_input_hint"
+        android:inputType="numberDecimal"
+        android:textColor="@color/brand_text_primary"
+        android:textColorHint="@color/brand_text_secondary" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/noise_tap_hint"
+        android:textColor="@color/brand_text_secondary"
+        android:textSize="14sp" />
+
+    <tatar.eljah.ui.IntensityGraphView
+        android:id="@+id/intensityGraphView"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginTop="8dp"
+        android:background="#1AFFFFFF" />
+
+    <tatar.eljah.ui.SpectrogramView
+        android:id="@+id/noiseSpectrogramView"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginTop="12dp"
+        android:background="#1AFFFFFF" />
+
+</LinearLayout>

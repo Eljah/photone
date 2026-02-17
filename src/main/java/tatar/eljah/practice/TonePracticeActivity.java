@@ -28,6 +28,7 @@ import tatar.eljah.audio.PitchAnalyzer;
 import tatar.eljah.model.ToneSample;
 import tatar.eljah.model.VietnameseSyllable;
 import tatar.eljah.settings.LocaleManager;
+import tatar.eljah.settings.NoiseSettingsStore;
 import tatar.eljah.tts.TtsVoiceSelector;
 import tatar.eljah.ui.SpectrogramView;
 import tatar.eljah.ui.ToneVisualizerView;
@@ -109,6 +110,7 @@ public class TonePracticeActivity extends AppCompatActivity {
     private static final int USER_RECORDING_DURATION_MS = 3000;
 
     private PitchAnalyzer pitchAnalyzer;
+    private float noiseThreshold;
     private final List<Float> userPitch = new ArrayList<>();
     private boolean isRecording = false;
     private boolean shouldRecognizeSpeech = false;
@@ -151,6 +153,7 @@ public class TonePracticeActivity extends AppCompatActivity {
         practiceToneSpinner = findViewById(R.id.spinner_practice_tone);
 
         pitchAnalyzer = new PitchAnalyzer();
+        noiseThreshold = NoiseSettingsStore.getNoiseThreshold(this);
 
         setupSpinners();
         referenceSample = createSimpleReferenceSample();
@@ -590,6 +593,12 @@ public class TonePracticeActivity extends AppCompatActivity {
             public void onSpectrum(final float[] magnitudes, final int sampleRate) {
                 final float[] frameCopy = new float[magnitudes.length];
                 System.arraycopy(magnitudes, 0, frameCopy, 0, magnitudes.length);
+                float normalizedIntensity = computeNormalizedSpectrumIntensity(frameCopy);
+                if (normalizedIntensity < noiseThreshold) {
+                    for (int i = 0; i < frameCopy.length; i++) {
+                        frameCopy[i] = 0f;
+                    }
+                }
                 synchronized (userSpectrogramFrames) {
                     userSpectrogramFrames.add(frameCopy);
                     if (userSpectrogramSampleRate == 0) {
@@ -617,6 +626,16 @@ public class TonePracticeActivity extends AppCompatActivity {
                 ? USER_RECORDING_DURATION_MS
                 : REFERENCE_RECORDING_DURATION_MS;
         handler.postDelayed(stopRecordingRunnable, recordingDurationMs);
+    }
+
+    private float computeNormalizedSpectrumIntensity(float[] magnitudes) {
+        float max = 0f;
+        for (float value : magnitudes) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return Math.min(1f, max / 6000f);
     }
 
     private void stopRecordingAndAnalyze(boolean recognizeSpeech) {
@@ -892,6 +911,12 @@ public class TonePracticeActivity extends AppCompatActivity {
         });
 
         recognizer.startListening(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        noiseThreshold = NoiseSettingsStore.getNoiseThreshold(this);
     }
 
     @Override
