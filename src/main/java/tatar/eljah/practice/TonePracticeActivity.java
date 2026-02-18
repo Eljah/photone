@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import tatar.eljah.R;
 import tatar.eljah.audio.PitchAnalyzer;
+import tatar.eljah.audio.RecorderNoteFrequencies;
 import tatar.eljah.model.ToneSample;
 import tatar.eljah.model.VietnameseSyllable;
 import tatar.eljah.settings.LocaleManager;
@@ -289,8 +290,9 @@ public class TonePracticeActivity extends AppCompatActivity {
 
     private ToneSample createSimpleReferenceSample() {
         List<Float> data = new ArrayList<>();
+        float referenceHz = RecorderNoteFrequencies.getFrequencyOrDefault("C5", 523.25f);
         for (int i = 0; i < 50; i++) {
-            data.add(150f + i);
+            data.add(referenceHz);
         }
         return new ToneSample(data, 20);
     }
@@ -653,6 +655,10 @@ public class TonePracticeActivity extends AppCompatActivity {
         userSample = new ToneSample(new ArrayList<>(userPitch), 20);
         finalizeUserRecording();
         compareToneDirection(recognizeSpeech);
+        String recorderHint = buildRecorderRecognitionHint(userPitch);
+        if (!recorderHint.isEmpty()) {
+            tvToneResult.append("\n" + recorderHint);
+        }
         if (recognizeSpeech) {
             startSpeechRecognition();
         }
@@ -846,6 +852,34 @@ public class TonePracticeActivity extends AppCompatActivity {
             text = getString(R.string.tone_result_diff);
         }
         tvToneResult.setText(text);
+    }
+
+
+    private float getAveragePitchHz(List<Float> pitchValues) {
+        if (pitchValues == null || pitchValues.isEmpty()) {
+            return 0f;
+        }
+        float sum = 0f;
+        int count = 0;
+        for (Float value : pitchValues) {
+            if (value != null && value > 0f) {
+                sum += value;
+                count++;
+            }
+        }
+        if (count == 0) {
+            return 0f;
+        }
+        return sum / count;
+    }
+
+    private String buildRecorderRecognitionHint(List<Float> pitchValues) {
+        float averagePitch = getAveragePitchHz(pitchValues);
+        RecorderNoteFrequencies.NoteFrequency nearest = RecorderNoteFrequencies.findNearest(averagePitch);
+        if (nearest == null) {
+            return "";
+        }
+        return "Recorder: " + RecorderNoteFrequencies.format(nearest);
     }
 
     private void startSpeechRecognition() {
